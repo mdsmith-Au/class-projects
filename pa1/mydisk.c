@@ -1,5 +1,6 @@
 #include "mydisk.h"
 #include <string.h>
+#include <stdio.h>
 
 FILE *thefile;     /* the file that stores all blocks */
 int max_blocks;    /* max number of blocks given at initialization */
@@ -11,15 +12,16 @@ int mydisk_init(char const *file_name, int nblocks, int type)
 	/* TODO: 1. use the proper mode to open the disk file
 	 * 2. fill zeros 
 	 */
-	thefile = fopen(file_name, "w+");
-	char zero[] = 0;
-	fwrite(zero, strlen(zero), BLOCK_SIZE * nblocks, thefile);
+	thefile = fopen(file_name, "wb+");
+	char zero = 0;
+	int num_to_write = BLOCK_SIZE * nblocks;
+	int num_written = fwrite(zero, strlen(zero), num_to_write, thefile);
 	max_blocks = nblocks;
-	disk_type = type;	
-	return 0;
+	disk_type = type;		
+	return num_written == num_to_write;
 }
 
-void mydisk_close()
+void mydisk_close()			
 {
 	/* TODO: clean up whatever done in mydisk_init()*/
 }
@@ -32,6 +34,7 @@ int mydisk_read_block(int block_id, void *buffer)
 		 * 3. fill the requested buffer with the data in the entry 
 		 * 4. return proper return code
 		 */
+		 
 		return 0;
 	} else {
 		/* TODO: use standard C functiosn to read from disk
