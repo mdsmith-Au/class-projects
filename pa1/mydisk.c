@@ -13,21 +13,33 @@ int mydisk_init(char const *file_name, int nblocks, int type)
 	 * 2. fill zeros 
 	 */
 	thefile = fopen(file_name, "wb+");
-	char zero = 0;
+	char zero[] = "\0";
 	int num_to_write = BLOCK_SIZE * nblocks;
-	int num_written = fwrite(zero, strlen(zero), num_to_write, thefile);
+	int num_written = 0;
+	int counter = 0;
+	while (counter < num_to_write){
+		num_written += fwrite(zero, 1, 1, thefile);
+		counter++;
+	}
+	if (num_written != num_to_write){
+		return 1;
+	}
 	max_blocks = nblocks;
 	disk_type = type;		
-	return num_written == num_to_write;
+	return 0;
 }
 
 void mydisk_close()			
 {
-	/* TODO: clean up whatever done in mydisk_init()*/
+	fclose(thefile);
 }
 
 int mydisk_read_block(int block_id, void *buffer)
 {
+	if (block_id > max_blocks){
+		return 1;
+	}
+	
 	if (cache_enabled) {
 		/* TODO: 1. check if the block is cached
 		 * 2. if not create a new entry for the block and read from disk
@@ -39,6 +51,18 @@ int mydisk_read_block(int block_id, void *buffer)
 	} else {
 		/* TODO: use standard C functiosn to read from disk
 		 */
+		 //Seek to position
+		 int seek_success = fseek(thefile, block_id * BLOCK_SIZE, SEEK_SET);
+		 if (seek_success == -1){
+		 	// Error
+		 	return 1;
+		 }
+		 
+		 // Read file
+		 int num_read = fread(buffer, 1, BLOCK_SIZE, thefile);
+		 if (num_read != BLOCK_SIZE){
+		 	return 1;
+		 }
 		return 0;
 	}
 }
@@ -48,6 +72,25 @@ int mydisk_write_block(int block_id, void *buffer)
 	/* TODO: this one is similar to read_block() except that
 	 * you need to mark it dirty
 	 */
+	 
+	 /*
+	 * TODO: MARK DIRTY! */
+	 if (block_id > max_blocks){
+	 	return 1;
+	 }
+	 
+	 //Seek to position
+	int seek_success = fseek(thefile, block_id * BLOCK_SIZE, SEEK_SET);
+	if (seek_success == -1){
+		// Error
+		return 1;
+	}
+	// Write file
+	int num_written = fwrite(buffer, 1, BLOCK_SIZE, thefile);
+	if (num_written != BLOCK_SIZE){
+		return 1;
+	}
+	
 	return 0;
 }
 
@@ -56,6 +99,13 @@ int mydisk_read(int start_address, int nbytes, void *buffer)
 	int offset, remaining, amount, block_id;
 	int cache_hit = 0, cache_miss = 0;
 
+	// Paramter check
+	if (!(start_address >= 0) && (start_address + nbyes >= start_address) && (start_address + nbytes <= (max_blocks * (BLOCK_SIZE -1 )))){
+		return 1;
+	}
+	// Check to see if address in middle of block (start or end)
+	if ( ((start_address % 512) != 0) || ((start_address + nbytes) % 512) != 0){
+		
 	/* TODO: 1. first, always check the parameters
 	 * 2. a loop which process one block each time
 	 * 2.1 offset means the in-block offset
