@@ -53,8 +53,7 @@ int stress_test2()
 	int start, end, tmp, size;
 	int i;
 
-	//for (i = 0; i < 10000; ++i) {
-        for (i = 0; i < 1000000000; ++i) {
+	for (i = 0; i < 10000; ++i) {
 		start = rand() % (MAX_BLOCKS * BLOCK_SIZE);
 		end = rand() % (MAX_BLOCKS * BLOCK_SIZE);
 		if (start > end) {

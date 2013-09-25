@@ -5,7 +5,7 @@
 FILE *thefile;     /* the file that stores all blocks */
 int max_blocks;    /* max number of blocks given at initialization */
 int disk_type;     /* disk type, 0 for HDD and 1 for SSD */
-int cache_enabled = 0; /* is cache enabled? 0 no, 1 yes */
+int cache_enabled; /* is cache enabled? 0 no, 1 yes */
 
 int mydisk_init(char const *file_name, int nblocks, int type)
 {
