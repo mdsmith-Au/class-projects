@@ -9,9 +9,6 @@ int cache_enabled = 0; /* is cache enabled? 0 no, 1 yes */
 
 int mydisk_init(char const *file_name, int nblocks, int type)
 {
-	/* TODO: 1. use the proper mode to open the disk file
-	 * 2. fill zeros 
-	 */
 	thefile = fopen(file_name, "wb+");
 	char zero[] = "\0";
 	int num_to_write = BLOCK_SIZE * nblocks;
@@ -98,14 +95,40 @@ int mydisk_read(int start_address, int nbytes, void *buffer)
 {
 	int offset, remaining, amount, block_id;
 	int cache_hit = 0, cache_miss = 0;
-
-	// Paramter check
-	if (!(start_address >= 0) && (start_address + nbyes >= start_address) && (start_address + nbytes <= (max_blocks * (BLOCK_SIZE -1 )))){
+	
+	// Parameter check
+	if ((start_address < 0) || (start_address + nbytes < start_address) || (start_address + nbytes >= (max_blocks * BLOCK_SIZE))){
 		return 1;
 	}
-	// Check to see if address in middle of block (start or end)
-	if ( ((start_address % 512) != 0) || ((start_address + nbytes) % 512) != 0){
-		
+	
+	// Init needed variables
+	block_id = start_address / BLOCK_SIZE;
+	remaining = nbytes;
+	offset = start_address % BLOCK_SIZE;
+	char *temp_buffer = malloc(BLOCK_SIZE);
+	
+	int bytes_completed = 0;
+	while( remaining != 0){
+		// Want to read all of this block or more
+		if ((remaining + offset) >= BLOCK_SIZE){
+			amount = BLOCK_SIZE - offset;
+		}
+		// Want to read only part of this block
+		else{
+			amount = remaining;
+		}
+		//Get block, copy
+		mydisk_read_block(block_id,temp_buffer);
+		memcpy(buffer + bytes_completed, &temp_buffer[offset], amount);
+		// Update counters
+		bytes_completed += amount;
+		remaining -= amount;
+		block_id++;
+		// Offset only useful for first block
+		offset = 0;
+	}
+	free(temp_buffer);
+	
 	/* TODO: 1. first, always check the parameters
 	 * 2. a loop which process one block each time
 	 * 2.1 offset means the in-block offset
@@ -126,5 +149,51 @@ int mydisk_write(int start_address, int nbytes, void *buffer)
 	 * When a block is modified partially, you need to first read the block,
 	 * modify the portion and then write the whole block back
 	 */
+	int offset, remaining, amount, block_id;
+	int cache_hit = 0, cache_miss = 0;
+	
+	// Parameter check
+	if ((start_address < 0) || (start_address + nbytes < start_address) || (start_address + nbytes >= (max_blocks * BLOCK_SIZE))){
+		return 1;
+	}
+	
+	// Init needed variables
+	block_id = start_address / BLOCK_SIZE;
+	remaining = nbytes;
+	offset = start_address % BLOCK_SIZE;
+	char *temp_buffer = malloc(BLOCK_SIZE);
+	
+	int bytes_completed = 0;
+	while( remaining != 0){
+		// Want to whole block (possibly after offset)
+		if ((remaining + offset) >= BLOCK_SIZE){
+			amount = BLOCK_SIZE - offset;
+		}
+		// Want to write only part of the block
+		else {
+			amount = remaining;
+		}
+		
+		// We have a partial write; read first
+		if (amount != BLOCK_SIZE) {
+			mydisk_read_block(block_id,temp_buffer);
+			// Combine into one block for writing
+			memcpy(&temp_buffer[offset], &buffer[bytes_completed], amount);
+			mydisk_write_block(block_id, temp_buffer);
+		}
+		// Full write
+		else {
+			mydisk_write_block(block_id, &buffer[bytes_completed]);
+		}
+		
+		// Update counters
+		bytes_completed += amount;
+		remaining -= amount;
+		block_id++;
+		// Offset only useful for first block
+		offset = 0;
+	}
+	free(temp_buffer);
+	 
 	return 0;
 }

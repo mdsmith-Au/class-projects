@@ -53,7 +53,8 @@ int stress_test2()
 	int start, end, tmp, size;
 	int i;
 
-	for (i = 0; i < 10000; ++i) {
+	//for (i = 0; i < 10000; ++i) {
+        for (i = 0; i < 1000000000; ++i) {
 		start = rand() % (MAX_BLOCKS * BLOCK_SIZE);
 		end = rand() % (MAX_BLOCKS * BLOCK_SIZE);
 		if (start > end) {
@@ -98,32 +99,32 @@ int main()
 	
 	
 	/* Test case 2: basic read/write */
-	/*memset(buffer, 0, size);
+	memset(buffer, 0, size);
 	mydisk_read(0, 13, buffer);
-	check_test(memcmp(buffer, "hello world\n", 13));*/
+	check_test(memcmp(buffer, "hello world\n", 13));
 
 	/* Test case 3: read in the middle */
-	/*memset(buffer, 0, BLOCK_SIZE);
+	memset(buffer, 0, BLOCK_SIZE);
 	mydisk_read(8, 5, buffer);
-	check_test(memcmp(buffer, "rld\n", 5));*/
+	check_test(memcmp(buffer, "rld\n", 5));
 
 	/* Test case 4: read/write across blocks */
-	/*size = BLOCK_SIZE;
+	size = BLOCK_SIZE;
 	rand_str(buffer, size);
 	mydisk_write(144, size, buffer);
 	memset(buffer2, 0, size);
 	mydisk_read(144, size, buffer2);
-	check_test(memcmp(buffer, buffer2, size));*/
+	check_test(memcmp(buffer, buffer2, size));
 
 	/* Test case 5: large read/write */
-	/*size = BLOCK_SIZE * (MAX_BLOCKS - 1);
+	size = BLOCK_SIZE * (MAX_BLOCKS - 1);
 	rand_str(buffer, size);
 	mydisk_write(276, size, buffer);
 	mydisk_read(276, size, buffer2);
-	check_test(memcmp(buffer, buffer2, size));*/
+	check_test(memcmp(buffer, buffer2, size));
 
 	/* Test case 6~9: read/write exception */
-	/*check_test(!mydisk_read(-1, 0, buffer));
+	check_test(!mydisk_read(-1, 0, buffer));
 	check_test(!mydisk_read(0, -10, buffer));
 	check_test(!mydisk_read(100, BLOCK_SIZE * MAX_BLOCKS, buffer));
 	check_test(mydisk_write(0, 0, buffer));
@@ -132,7 +133,7 @@ int main()
 	check_test(stress_test2());
 
 	close_cache();
-	*/
+	
 	mydisk_close();
 	return 0;
 }

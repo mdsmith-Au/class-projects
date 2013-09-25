@@ -1,7 +1,8 @@
 CC=gcc
 LD=gcc
 
-CC_FLAGS= -g -O3 -march=native
+#CC_FLAGS = -g
+CC_FLAGS= -g -march=native -O3
 LDFLAGS=
 
 OBJECTS=mydisk.o caching.o test.o
