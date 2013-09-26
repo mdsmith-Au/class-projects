@@ -1,5 +1,6 @@
 #include "mydisk.h"
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 FILE *thefile; /* the file that stores all blocks */
@@ -10,22 +11,27 @@ int cache_enabled; /* is cache enabled? 0 no, 1 yes */
 int mydisk_init(char const *file_name, int nblocks, int type) {
     
     thefile = fopen(file_name, "wb+");
+    if (thefile == NULL) {
+        return 1;
+    }
+    
     char zero[] = "\0";
     int num_to_write = BLOCK_SIZE * nblocks;
     int num_written = 0;
     int counter = 0;
+    max_blocks = nblocks;
+    disk_type = type;
     
+    /* Fill file with zeros */
     while (counter < num_to_write) {
         num_written += fwrite(zero, 1, 1, thefile);
         counter++;
     }
     
+    /* Unable to write everything; exit */
     if (num_written != num_to_write) {
         return 1;
     }
-    
-    max_blocks = nblocks;
-    disk_type = type;
     return 0;
 }
 
@@ -39,35 +45,30 @@ int mydisk_read_block(int block_id, void *buffer) {
     }
 
     if (cache_enabled) {
-
-        /* TODO: 1. check if the block is cached
-         * 2. if not create a new entry for the block and read from disk
-         * 3. fill the requested buffer with the data in the entry 
-         * 4. return proper return code 
-         */
+        
         void *cache = get_cached_block(block_id);
-        // Cache miss
+        
+        /* Cache miss: read from disk and copy to cache */
         if (cache == NULL) {
             cache = create_cached_block(block_id);
             
-            //Seek to position
+            /* Seek to position */
             int seek_success = fseek(thefile, block_id * BLOCK_SIZE, SEEK_SET);
             if (seek_success == -1) {
-                // Error
                 return 1;
             }
             
-            // Read file
+            /* Read file to buffer*/
             int num_read = fread(buffer, 1, BLOCK_SIZE, thefile);
             if (num_read != BLOCK_SIZE) {
                 return 1;
             }
             
-            // Copy to cache
+            /* Copy to cache before exiting */
             memcpy(cache, buffer, BLOCK_SIZE);
             return 0;
         }
-        // Cache hit
+        /* Cache hit - read from cache */
         else {
             memcpy(buffer,cache,BLOCK_SIZE);
             return -1;
@@ -75,17 +76,15 @@ int mydisk_read_block(int block_id, void *buffer) {
         
     } 
     
+    /* Cache not enabled - normal read/write*/
     else {
-        /* TODO: use standard C functiosn to read from disk
-         */
-        //Seek to position
+        /* Seek to position */
         int seek_success = fseek(thefile, block_id * BLOCK_SIZE, SEEK_SET);
         if (seek_success == -1) {
-            // Error
             return 1;
         }
 
-        // Read file
+        /* Read file to buffer*/
         int num_read = fread(buffer, 1, BLOCK_SIZE, thefile);
         if (num_read != BLOCK_SIZE) {
             return 1;
@@ -95,9 +94,6 @@ int mydisk_read_block(int block_id, void *buffer) {
 }
 
 int mydisk_write_block(int block_id, void *buffer) {
-    /* TODO: this one is similar to read_block() except that
-     * you need to mark it dirty
-     */
 
     if (block_id > max_blocks) {
         return 1;
@@ -105,31 +101,39 @@ int mydisk_write_block(int block_id, void *buffer) {
 
     if (cache_enabled) {
         void *cache = get_cached_block(block_id);
-        // Cache miss
+
+        /* Cache miss - execute write as usual */
         if (cache == NULL) {
-            cache = create_cached_block(block_id);
-            // Now we simply dump the buffer into the cache and mark as dirty
-            memcpy(cache, buffer, BLOCK_SIZE);
-            mark_dirty(block_id);
+            
+            /* Seek to position */
+            int seek_success = fseek(thefile, block_id * BLOCK_SIZE, SEEK_SET);
+            if (seek_success == -1) {
+                return 1;
+            }
+            /* Write to disk */
+            int num_written = fwrite(buffer, 1, BLOCK_SIZE, thefile);
+            if (num_written != BLOCK_SIZE) {
+                return 1;
+            }
             return 0;
         }
-        // Cache hit
+        /* Cache hit */
         else {
-            // Simply replace existing content, mark dirty
+            /* Replace existing content in cache, mark dirty */
             memcpy(cache, buffer, BLOCK_SIZE);
             mark_dirty(block_id);
             return -1;
         }
     }
     
+   /* Cache not enabled - read/write as usual */
     else {
-        //Seek to position
+        /*Seek to position and write fily*/
         int seek_success = fseek(thefile, block_id * BLOCK_SIZE, SEEK_SET);
         if (seek_success == -1) {
-            // Error
             return 1;
         }
-        // Write file
+        
         int num_written = fwrite(buffer, 1, BLOCK_SIZE, thefile);
         if (num_written != BLOCK_SIZE) {
             return 1;
@@ -143,27 +147,31 @@ int mydisk_read(int start_address, int nbytes, void *buffer) {
     int offset, remaining, amount, block_id;
     int cache_hit = 0, cache_miss = 0;
 
-    // Parameter check
+    /* Parameter check */
     if ((start_address < 0) || (start_address + nbytes < start_address) || (start_address + nbytes >= (max_blocks * BLOCK_SIZE))) {
         return 1;
     }
 
-    // Init needed variables
+    /* Init needed variables */
     block_id = start_address / BLOCK_SIZE;
     remaining = nbytes;
     offset = start_address % BLOCK_SIZE;
     char *temp_buffer = malloc(BLOCK_SIZE);
-
     int bytes_completed = 0;
+
+    /* Process blocks as necessary */
     while (remaining != 0) {
-        // Want to read all of this block or more
+        /* Want to read all (after offset) of this block or more */
         if ((remaining + offset) >= BLOCK_SIZE) {
             amount = BLOCK_SIZE - offset;
-        }            // Want to read only part of this block
+        }            
+        
+        /* Want to read only part of this block */
         else {
             amount = remaining;
         }
-        //Get block, check cache miss/hit
+        
+        /*Get block, check cache miss/hit */
         int read_return = mydisk_read_block(block_id, temp_buffer);
         
         if (read_return == -1) {
@@ -172,18 +180,17 @@ int mydisk_read(int start_address, int nbytes, void *buffer) {
         else {
             cache_miss++;
         }
-        //Copy
+        /* Copy to buffer, update counters */
         memcpy(buffer + bytes_completed, &temp_buffer[offset], amount);
-        // Update counters
         bytes_completed += amount;
         remaining -= amount;
         block_id++;
-        // Offset only useful for first block
+        /* Offset only useful for first block, set to 0 */
         offset = 0;
     }
     free(temp_buffer);
     
-    //Calculate and print latency
+    /* Calculate and print latency. disk_type = 0 is HDD, 1 is SSD */
     int latency;
     if (disk_type == 0) {
         latency = (cache_hit * MEMORY_LATENCY + HDD_SEEK + (cache_miss * HDD_READ_LATENCY));
@@ -192,52 +199,41 @@ int mydisk_read(int start_address, int nbytes, void *buffer) {
         latency = (cache_hit * MEMORY_LATENCY + (cache_miss * SSD_READ_LATENCY));
     }
     report_latency(latency);
-
-    /* TODO: 1. first, always check the parameters
-     * 2. a loop which process one block each time
-     * 2.1 offset means the in-block offset
-     * amount means the number of bytes to be moved from the block
-     * (starting from offset)
-     * remaining means the remaining bytes before final completion
-     * 2.2 get one block, copy the proper portion
-     * 2.3 update offset, amount and remaining
-     * in terms of latency calculation, monitor if cache hit/miss
-     * for each block access
-     */
+    
     return 0;
 }
 
 int mydisk_write(int start_address, int nbytes, void *buffer) {
-    /* TODO: similar to read, except the partial write problem
-     * When a block is modified partially, you need to first read the block,
-     * modify the portion and then write the whole block back
-     */
+
     int offset, remaining, amount, block_id;
     int read_cache_hit = 0, read_cache_miss = 0;
     int write_cache_hit = 0, write_cache_miss = 0;
 
-    // Parameter check
+    /* Parameter check, same as read */
     if ((start_address < 0) || (start_address + nbytes < start_address) || (start_address + nbytes >= (max_blocks * BLOCK_SIZE))) {
         return 1;
     }
 
-    // Init needed variables
+    /* Init needed variables */
     block_id = start_address / BLOCK_SIZE;
     remaining = nbytes;
     offset = start_address % BLOCK_SIZE;
     char *temp_buffer = malloc(BLOCK_SIZE);
-
     int bytes_completed = 0;
+
+    /* Process blocks as necessary */
     while (remaining != 0) {
-        // Want to whole block (possibly after offset)
+        /* Want to write whole block (possibly after offset) */
         if ((remaining + offset) >= BLOCK_SIZE) {
             amount = BLOCK_SIZE - offset;
-        }            // Want to write only part of the block
+        }            
+        
+        /* Want to write only part of the block */
         else {
             amount = remaining;
         }
 
-        // We have a partial write; read first
+        /* We have a partial write; read first, monitor latency */
         if (amount != BLOCK_SIZE) {
             int read_return = mydisk_read_block(block_id, temp_buffer);
             
@@ -246,8 +242,9 @@ int mydisk_write(int start_address, int nbytes, void *buffer) {
             } else {
                 read_cache_miss++;
             }
-            // Combine into one block for writing
-            memcpy(&temp_buffer[offset], &buffer[bytes_completed], amount);
+            
+            /* Combine into one block for writing to disk; monitor latency */
+            memcpy(&temp_buffer[offset], buffer + bytes_completed, amount);
             int write_return = mydisk_write_block(block_id, temp_buffer);
             
             if (write_return == -1) {
@@ -257,9 +254,9 @@ int mydisk_write(int start_address, int nbytes, void *buffer) {
             }
         }
 
-            // Full write
+        /* Full write */
         else {
-            int write_return = mydisk_write_block(block_id, &buffer[bytes_completed]);
+            int write_return = mydisk_write_block(block_id, buffer + bytes_completed);
 
             if (write_return == -1) {
                 write_cache_hit++;
@@ -268,31 +265,36 @@ int mydisk_write(int start_address, int nbytes, void *buffer) {
             }
         }
 
-        // Update counters
+        /* Update counters */
         bytes_completed += amount;
         remaining -= amount;
         block_id++;
-        // Offset only useful for first block
+        /* Offset only useful for first block */
         offset = 0;
     }
     free(temp_buffer);
 
-    //Calculate and print latency
+    /* Calculate and print latency */
     int read_latency, write_latency;
     
+    /* Hard Drive = 0, SSD = 1 */
     if (disk_type == 0) {
-        // There may not be any reads, and thus no seek
+        /* There may not be any reads, and thus no seek */
         if ((read_cache_hit == 0) && (read_cache_miss == 0)) {
             read_latency = 0;
-        } else {
+        } 
+        /* At least one read, so we consider seek */
+        else {
             read_latency = (read_cache_hit * MEMORY_LATENCY + HDD_SEEK + (read_cache_miss * HDD_READ_LATENCY));
         }
-        // But there will always be a write
+        /* On the other hand, there will *always* be a write */
         write_latency = (write_cache_hit * MEMORY_LATENCY + HDD_SEEK + (write_cache_miss * HDD_WRITE_LATENCY));
-    } else {
-        // No seek to deal with here - if both hit + miss = 0, read = 0
+    } 
+    
+    else {
+        /* No seek to deal with here - if both hit + miss = 0, read = 0 for SSD */
         read_latency = (read_cache_hit * MEMORY_LATENCY + (read_cache_miss * SSD_READ_LATENCY));
-        // Write same as above
+        /* Write same as above */
         write_latency = (write_cache_hit * MEMORY_LATENCY + (write_cache_miss * SSD_WRITE_LATENCY));
     }
     report_latency(read_latency + write_latency);

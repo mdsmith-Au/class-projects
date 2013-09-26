@@ -13,7 +13,7 @@ static char buffer2[MAX_BLOCKS * BLOCK_SIZE];
 void report_latency(int latency)
 {
 	/* TODO: If debugging, uncomment the below line to see the latency */
-	printf("Operation latency: %d\n", latency); 
+//	printf("Operation latency: %d\n", latency); 
 }
 
 void rand_str(char *buf, int size)
@@ -128,8 +128,8 @@ int main()
 	check_test(!mydisk_read(100, BLOCK_SIZE * MAX_BLOCKS, buffer));
 	check_test(mydisk_write(0, 0, buffer));
 
-//	check_test(stress_test());
-//	check_test(stress_test2());
+	check_test(stress_test());
+	check_test(stress_test2());
 
 	close_cache();
 	
