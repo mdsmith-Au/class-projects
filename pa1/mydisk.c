@@ -65,12 +65,14 @@ int mydisk_read_block(int block_id, void *buffer) {
             
             // Copy to cache
             memcpy(cache, buffer, BLOCK_SIZE);
+            return 0;
         }
         // Cache hit
         else {
             memcpy(buffer,cache,BLOCK_SIZE);
+            return -1;
         }
-        return 0;
+        
     } 
     
     else {
@@ -109,12 +111,14 @@ int mydisk_write_block(int block_id, void *buffer) {
             // Now we simply dump the buffer into the cache and mark as dirty
             memcpy(cache, buffer, BLOCK_SIZE);
             mark_dirty(block_id);
+            return 0;
         }
         // Cache hit
         else {
             // Simply replace existing content, mark dirty
             memcpy(cache, buffer, BLOCK_SIZE);
             mark_dirty(block_id);
+            return -1;
         }
     }
     
@@ -130,9 +134,9 @@ int mydisk_write_block(int block_id, void *buffer) {
         if (num_written != BLOCK_SIZE) {
             return 1;
         }
+        
+        return 0;
     }
-
-    return 0;
 }
 
 int mydisk_read(int start_address, int nbytes, void *buffer) {

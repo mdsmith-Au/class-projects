@@ -98,8 +98,6 @@ void *create_cached_block(int block_id) {
     }
     // Now that a dirty block (if any) has been taken care of, we write
     // (or overwrite) an entry
-//    free(entry->content);
-//    entry = malloc(sizeof(struct cache_entry));
     entry->block_id = block_id;
     entry->is_dirty = 0;
     // Generally, next position to insert is the next in sequence
@@ -108,6 +106,7 @@ void *create_cached_block(int block_id) {
     if (next_insert_pos == (cache_blocks -1 )) {
         next_insert_pos = 0;
     }
+    // Increment size if we are adding entries
     if (orig_block_id == -1) {
         cache_size++;
     }
