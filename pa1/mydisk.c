@@ -163,8 +163,16 @@ int mydisk_read(int start_address, int nbytes, void *buffer) {
         else {
             amount = remaining;
         }
-        //Get block, copy
-        mydisk_read_block(block_id, temp_buffer);
+        //Get block, check cache miss/hit
+        int read_return = mydisk_read_block(block_id, temp_buffer);
+        
+        if (read_return == -1) {
+            cache_hit++;
+        }
+        else {
+            cache_miss++;
+        }
+        //Copy
         memcpy(buffer + bytes_completed, &temp_buffer[offset], amount);
         // Update counters
         bytes_completed += amount;
@@ -174,6 +182,16 @@ int mydisk_read(int start_address, int nbytes, void *buffer) {
         offset = 0;
     }
     free(temp_buffer);
+    
+    //Calculate and print latency
+    int latency;
+    if (disk_type == 0) {
+        latency = (cache_hit * MEMORY_LATENCY + HDD_SEEK + (cache_miss * HDD_READ_LATENCY));
+    }
+    else {
+        latency = (cache_hit * MEMORY_LATENCY + (cache_miss * SSD_READ_LATENCY));
+    }
+    report_latency(latency);
 
     /* TODO: 1. first, always check the parameters
      * 2. a loop which process one block each time
@@ -195,7 +213,8 @@ int mydisk_write(int start_address, int nbytes, void *buffer) {
      * modify the portion and then write the whole block back
      */
     int offset, remaining, amount, block_id;
-    int cache_hit = 0, cache_miss = 0;
+    int read_cache_hit = 0, read_cache_miss = 0;
+    int write_cache_hit = 0, write_cache_miss = 0;
 
     // Parameter check
     if ((start_address < 0) || (start_address + nbytes < start_address) || (start_address + nbytes >= (max_blocks * BLOCK_SIZE))) {
@@ -220,13 +239,33 @@ int mydisk_write(int start_address, int nbytes, void *buffer) {
 
         // We have a partial write; read first
         if (amount != BLOCK_SIZE) {
-            mydisk_read_block(block_id, temp_buffer);
+            int read_return = mydisk_read_block(block_id, temp_buffer);
+            
+            if (read_return == -1) {
+                read_cache_hit++;
+            } else {
+                read_cache_miss++;
+            }
             // Combine into one block for writing
             memcpy(&temp_buffer[offset], &buffer[bytes_completed], amount);
-            mydisk_write_block(block_id, temp_buffer);
-        }            // Full write
+            int write_return = mydisk_write_block(block_id, temp_buffer);
+            
+            if (write_return == -1) {
+                write_cache_hit++;
+            } else {
+                write_cache_miss++;
+            }
+        }
+
+            // Full write
         else {
-            mydisk_write_block(block_id, &buffer[bytes_completed]);
+            int write_return = mydisk_write_block(block_id, &buffer[bytes_completed]);
+
+            if (write_return == -1) {
+                write_cache_hit++;
+            } else {
+                write_cache_miss++;
+            }
         }
 
         // Update counters
@@ -237,6 +276,26 @@ int mydisk_write(int start_address, int nbytes, void *buffer) {
         offset = 0;
     }
     free(temp_buffer);
+
+    //Calculate and print latency
+    int read_latency, write_latency;
+    
+    if (disk_type == 0) {
+        // There may not be any reads, and thus no seek
+        if ((read_cache_hit == 0) && (read_cache_miss == 0)) {
+            read_latency = 0;
+        } else {
+            read_latency = (read_cache_hit * MEMORY_LATENCY + HDD_SEEK + (read_cache_miss * HDD_READ_LATENCY));
+        }
+        // But there will always be a write
+        write_latency = (write_cache_hit * MEMORY_LATENCY + HDD_SEEK + (write_cache_miss * HDD_WRITE_LATENCY));
+    } else {
+        // No seek to deal with here - if both hit + miss = 0, read = 0
+        read_latency = (read_cache_hit * MEMORY_LATENCY + (read_cache_miss * SSD_READ_LATENCY));
+        // Write same as above
+        write_latency = (write_cache_hit * MEMORY_LATENCY + (write_cache_miss * SSD_WRITE_LATENCY));
+    }
+    report_latency(read_latency + write_latency);
 
     return 0;
 }
