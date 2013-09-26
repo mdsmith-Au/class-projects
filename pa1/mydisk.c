@@ -1,3 +1,8 @@
+/*
+ * Michael Smith
+ * ID: 260481943
+ * ECSE 427 Assignment 1
+ */
 #include "mydisk.h"
 #include <string.h>
 #include <stdlib.h>
@@ -193,8 +198,15 @@ int mydisk_read(int start_address, int nbytes, void *buffer) {
     /* Calculate and print latency. disk_type = 0 is HDD, 1 is SSD */
     int latency;
     if (disk_type == 0) {
-        latency = (cache_hit * MEMORY_LATENCY + HDD_SEEK + (cache_miss * HDD_READ_LATENCY));
+        // No cache misses means no seeking
+        if (cache_miss == 0) {
+            latency = cache_hit * MEMORY_LATENCY;
+        }
+        else {
+            latency = (cache_hit * MEMORY_LATENCY + HDD_SEEK + (cache_miss * HDD_READ_LATENCY));
+        }
     }
+    
     else {
         latency = (cache_hit * MEMORY_LATENCY + (cache_miss * SSD_READ_LATENCY));
     }
@@ -274,23 +286,29 @@ int mydisk_write(int start_address, int nbytes, void *buffer) {
     }
     free(temp_buffer);
 
-    /* Calculate and print latency */
+    /* Calculate and print latency section */
     int read_latency, write_latency;
     
-    /* Hard Drive = 0, SSD = 1 */
+    /* Hard Drive */
     if (disk_type == 0) {
-        /* There may not be any reads, and thus no seek */
-        if ((read_cache_hit == 0) && (read_cache_miss == 0)) {
-            read_latency = 0;
+        /* No cache misses, no seek */
+        if (read_cache_miss == 0) {
+            read_latency = read_cache_hit * MEMORY_LATENCY;
         } 
-        /* At least one read, so we consider seek */
+        /* At least 1 cache miss, so we consider seek */
         else {
             read_latency = (read_cache_hit * MEMORY_LATENCY + HDD_SEEK + (read_cache_miss * HDD_READ_LATENCY));
         }
-        /* On the other hand, there will *always* be a write */
-        write_latency = (write_cache_hit * MEMORY_LATENCY + HDD_SEEK + (write_cache_miss * HDD_WRITE_LATENCY));
+        /* Same for write */
+        if (write_cache_miss == 0) {
+            write_latency = write_cache_hit * MEMORY_LATENCY;
+        }
+        else {
+            write_latency = (write_cache_hit * MEMORY_LATENCY + HDD_SEEK + (write_cache_miss * HDD_WRITE_LATENCY));
+        }
+        
     } 
-    
+    /* SSD */
     else {
         /* No seek to deal with here - if both hit + miss = 0, read = 0 for SSD */
         read_latency = (read_cache_hit * MEMORY_LATENCY + (read_cache_miss * SSD_READ_LATENCY));

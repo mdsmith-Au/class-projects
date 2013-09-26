@@ -1,3 +1,8 @@
+/*
+ * Michael Smith
+ * ID: 260481943
+ * ECSE 427 Assignment 1
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
