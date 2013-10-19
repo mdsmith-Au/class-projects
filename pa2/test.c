@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+static void custom_tests(void);
+
 static void compiler_validation()
 {
 	if (sizeof(u32) != 4) {
@@ -255,15 +257,23 @@ int main()
 
 	compiler_validation();
 	sfs_init_storage();
-
-	for (i = 0; i < sizeof(tests)/sizeof(tests[0]); ++i) {
-		if (tests[i]()) {
-			printf("%d: FAILED\n", i+1);
-			break;
-		}
-		printf("%d: PASS\n", i+1);
-	}
+        custom_tests();
+//
+//	for (i = 0; i < sizeof(tests)/sizeof(tests[0]); ++i) {
+//		if (tests[i]()) {
+//			printf("%d: FAILED\n", i+1);
+//			break;
+//		}
+//		printf("%d: PASS\n", i+1);
+//	}
 
 	sfs_close_storage();
 	return 0;
+}
+
+static void custom_tests(void) {
+    
+    sfs_superblock_t *p;
+    sfs_mkfs();
+    sfs_print_info();
 }
