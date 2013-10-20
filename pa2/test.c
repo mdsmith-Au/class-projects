@@ -81,7 +81,11 @@ static int testcase3(void)
 		return 1;
 	}
 	sfs_remove(fd2);
-	sfs_remove(fd);
+        // -----
+        printf("file 1-1 in root removed\n");
+	sfs_ls();
+        // ----
+        sfs_remove(fd);
 	if (sfs_ls() != 1) {
 		return 1;
 	}
@@ -257,23 +261,16 @@ int main()
 
 	compiler_validation();
 	sfs_init_storage();
-        custom_tests();
-//
-//	for (i = 0; i < sizeof(tests)/sizeof(tests[0]); ++i) {
-//		if (tests[i]()) {
-//			printf("%d: FAILED\n", i+1);
-//			break;
-//		}
-//		printf("%d: PASS\n", i+1);
-//	}
+
+	for (i = 0; i < sizeof(tests)/sizeof(tests[0]); ++i) {
+		if (tests[i]()) {
+			printf("%d: FAILED\n", i+1);
+			break;
+		}
+		printf("%d: PASS\n", i+1);
+	}
 
 	sfs_close_storage();
 	return 0;
 }
 
-static void custom_tests(void) {
-    
-    sfs_superblock_t *p;
-    sfs_mkfs();
-    sfs_print_info();
-}
