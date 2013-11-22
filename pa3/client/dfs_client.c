@@ -1,5 +1,6 @@
 #include "client/dfs_client.h"
 #include "datanode/ext.h"
+#include <sys/stat.h>
 
 int connect_to_nn(char* address, int port)
 {
@@ -7,9 +8,7 @@ int connect_to_nn(char* address, int port)
 	assert(port >= 1 && port <= 65535);
 	//TODO: create a socket and connect it to the server (address, port)
 	//assign return value to client_socket 
-	int client_socket = -1;
-	
-	return client_socket;
+	return create_client_tcp_socket( address, port);
 }
 
 int modify_file(char *ip, int port, const char* filename, int file_size, int start_addr, int end_addr)
@@ -41,10 +40,20 @@ int push_file(int namenode_socket, const char* local_path)
 	// Create the push request
 	dfs_cm_client_req_t request;
 
-	//TODO:fill the fields in request and 
+	//TODO:fill the fields in request and
+        strcpy(request.file_name, local_path);
+        //Get file size
+        struct stat info;
+        stat(file, &info);
+        request.file_size = (int)info.st_size;
+        request.req_type = 1;
+        
+        send_data(namenode_socket, request, sizeof(request));
 	
 	//TODO:Receive the response
 	dfs_cm_file_res_t response;
+        receive_data(namenode_socket, response, sizeof(response));
+        
 
 	//TODO: Send blocks to datanodes one by one
 
@@ -76,11 +85,18 @@ dfs_system_status *get_system_info(int namenode_socket)
 	assert(namenode_socket != INVALID_SOCKET);
 	//TODO fill the result and send 
 	dfs_cm_client_req_t request;
+        memset(request.file_name, 0, sizeof(request.file_name));
+        request.file_size = 0;
+        // 2 : query datanodes
+        request.req_type = 2;
 	
 	//TODO: get the response
-	dfs_system_status *response; 
+	dfs_system_status *response;
+        
+        send_data(namenode_socket, request, sizeof(request));
+        receive_data(namenode_socket, response, sizeof(response));
 
-	return response;		
+	return response;
 }
 
 int send_file_request(char **argv, char *filename, int op_type)

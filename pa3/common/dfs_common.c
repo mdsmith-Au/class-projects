@@ -1,4 +1,6 @@
 #include "common/dfs_common.h"
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <pthread.h>
 /**
  * create a thread and activate it
@@ -8,8 +10,8 @@
  */
 inline pthread_t * create_thread(void * (*entry_point)(void*), void *args)
 {
-	//TODO: create the thread and run it
 	pthread_t * thread;
+        pthread_create(thread, NULL, entry_point, args);
 
 	return thread;
 }
@@ -19,21 +21,36 @@ inline pthread_t * create_thread(void * (*entry_point)(void*), void *args)
  */
 int create_tcp_socket()
 {
-	//TODO:create the socket and return the file descriptor 
-	return -1;
+	return socket(AF_INET, SOCK_STREAM, 0);
 }
 
 /**
  * create the socket and connect it to the destination address
- * 0 - success, 1 - failure
+ * return socket file descriptor
  */
 int create_client_tcp_socket(char* address, int port)
 {
 	assert(port >= 0 && port < 65536);
 	int socket = create_tcp_socket();
-	if (socket == INVALID_SOCKET) return 1;
+	if (socket == INVALID_SOCKET) return -1;
 	//TODO: connect it to the destination port
-	return socket;
+        struct sockaddr_in socketAddress;
+        struct hostent *server;
+        
+        server = gethostbyname(address);
+        if (server == NULL) {
+            return -1;
+        }
+        memset(socketAddress, 0, sizeof(socketAddress));
+        
+        socketAddress.sin_family = AF_INET;
+        socketAddress.sin_port = htons(port);
+        memcpy(socketAddress.sin_addr.s_addr, server_h_addr, server->h_length);
+        
+        if (connect(socket,(struct sockaddr *) &socketAddress, sizeof(socketAddress)) < 0 ) {
+            return -1;
+        }
+        return socket;
 }
 
 /**
@@ -43,9 +60,28 @@ int create_server_tcp_socket(int port)
 {
 	assert(port >= 0 && port < 65536);
 	int socket = create_tcp_socket();
-	if (socket == INVALID_SOCKET) return 1;
+	if (socket == INVALID_SOCKET) return -1;
 	//TODO: listen on local port
-	return socket;
+        
+        struct sockaddr_in socketAddress;
+        memset(socketAddress, 0, sizeof(socketAddress));
+        
+        socketAddress.sin_family = AF_INET;
+        socketAddress.sin_port = htons(port);
+        socketAddress.sin_addr.s_addr = INADDR_ANY;
+        
+        int iSetOption = 1;
+        setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption,
+        sizeof(iSetOption));
+        
+        if ( bind( socket, (struct sockaddr *) &socketAddress, sizeof(socketAddress) ) < 0 ) {
+            return -1;
+        }
+        
+        if ( listen(socket, 10) < 0) {
+            return -1;
+        }
+        return socket;
 }
 
 /**
@@ -58,7 +94,8 @@ void send_data(int socket, void* data, int size)
 	assert(data != NULL);
 	assert(size >= 0);
 	if (socket == INVALID_SOCKET) return;
-	//TODO: send data through socket
+        
+        send(socket, data, size, 0);
 }
 
 /**
@@ -72,5 +109,6 @@ void receive_data(int socket, void* data, int size)
 	assert(data != NULL);
 	assert(size >= 0);
 	if (socket == INVALID_SOCKET) return;
-	//TODO: fetch data via socket
+	
+        recv(socket, data, size, 0);
 }

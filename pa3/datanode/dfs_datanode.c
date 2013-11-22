@@ -15,8 +15,8 @@ int mainLoop()
 	//we don't consider concurrent operations in this assignment
 	int server_socket = -1;
 	//TODO: create a server socket and listen on it, you can implement dfs_common.c and call it here
-
-	assert (server_socket == INVALID_SOCKET);
+        
+	assert (server_socket != INVALID_SOCKET);
 
 	// Listen to requests from the clients
 	for (;;)
@@ -43,7 +43,7 @@ static void *heartbeat()
 	for (;;)
 	{
 		int heartbeat_socket = -1;
-		//TODO: create a thread to the namenode, assign file descriptor id to heartbeat_socket
+		//TODO: create a new socket to the namenode, assign file descriptor id to heartbeat_socket
 		assert(heartbeat_socket != INVALID_SOCKET);
 		//send datanode_status to namenode
 		close(heartbeat_socket);
