@@ -145,6 +145,7 @@ int get_file_receivers(int client_socket, dfs_cm_client_req_t request) {
     while (next_data_node_index < block_count) {
         dfs_cm_block_t block_data;
         
+        memset(&block_data, 0, sizeof(block_data));
         block_data.dn_id = dnlist[next_data_node_index % dncnt]->dn_id;
         block_data.block_id = first_unassigned_block_index;
         memcpy(block_data.loc_ip, dnlist[next_data_node_index % dncnt]->ip, sizeof(block_data.loc_ip));
@@ -209,14 +210,48 @@ int get_file_update_point(int client_socket, dfs_cm_client_req_t request) {
         dfs_cm_file_t* file_image = file_images[i];
         if (file_image == NULL) continue;
         if (strcmp(file_image->filename, request.file_name) != 0) continue;
+
+        // File found
         dfs_cm_file_res_t response;
+
+        // Append if necessary
+        if (request.file_size > file_image->file_size) {
+            // New # of blocks
+            int block_count = (request.file_size + (DFS_BLOCK_SIZE - 1)) / DFS_BLOCK_SIZE;
+            int blocks_needed = block_count - file_image->blocknum;
+            int unassigned_block_index = file_image->blocknum;
+            file_image->blocknum = block_count;
+            file_image->file_size = request.file_size;
+            
+            int blocks_assigned = 0;
+            while (blocks_assigned < blocks_needed) {
+                
+                printf("Modify: assigning block %i\n", unassigned_block_index);
+                dfs_cm_block_t block_data;
+                memset(&block_data, 0, sizeof(block_data));
+                
+                block_data.dn_id = dnlist[unassigned_block_index % dncnt]->dn_id;
+                block_data.block_id = unassigned_block_index;
+                
+                memcpy(block_data.loc_ip, dnlist[unassigned_block_index % dncnt]->ip, sizeof (block_data.loc_ip));
+                block_data.loc_port = dnlist[unassigned_block_index % dncnt]->port;
+                
+                strcpy(block_data.owner_name, request.file_name);
+                
+                memcpy(&file_image->block_list[unassigned_block_index], &block_data, sizeof (block_data));
+                unassigned_block_index++;
+                blocks_assigned++;
+            }
+        }
+
         //Fill the response and send it back to the client
-        // Send back the data block assignments to the client
         memset(&response, 0, sizeof (response));
-        //Fill the response and send it back to the client
         
-        get_file_location(client_socket, request);
-        get_file_receivers(client_socket, request);
+        // Note that if we append, we update the file image, so this contains existing
+        // data + new
+        memcpy(&response.query_result, file_image, sizeof (response.query_result));
+        send_data(client_socket, &response, sizeof (response));
+
         return 0;
     }
     //FILE NOT FOUND

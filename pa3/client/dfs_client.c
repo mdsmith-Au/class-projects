@@ -19,13 +19,44 @@ int modify_file(char *ip, int port, const char* filename, int file_size, int sta
 	FILE* file = fopen(filename, "rb");
 	assert(file != NULL);
 
-	//TODO:fill the request and send
+	//Fill the request and send
 	dfs_cm_client_req_t request;
-	
-	//TODO: receive the response
+        strcpy(request.file_name, filename);
+	request.file_size = file_size;
+        request.req_type = 3;
+        send_data(namenode_socket, &request, sizeof(request));
+        
+	//Receive the response
 	dfs_cm_file_res_t response;
-
-	//TODO: send the updated block to the proper datanode
+        receive_data(namenode_socket, &response, sizeof(response));
+        
+	//Send the updated block to the proper datanode
+        char *buffer= (char *) malloc(sizeof(char) * (end_addr - start_addr - 1));
+        
+        // Read data from start to end from disk
+        fseek(file, start_addr, SEEK_SET);
+        fread(buffer, sizeof(char), end_addr - start_addr - 1, file);
+        
+        // Data to modify may span more than 1 node
+        // Calculate start block id
+        int current_id = start_addr / DFS_BLOCK_SIZE;
+        
+        int data_sent = 0;
+        while (data_sent < (end_addr - start_addr)) {
+            dfs_cli_dn_req_t request2;
+            request2.op_type = 1;
+            request2.block.block_id = current_id;
+            strcpy(request2.block.owner_name, filename);
+            memcpy(request2.block.content, &buffer[data_sent], sizeof(buffer));
+            
+            int dn_socket = create_client_tcp_socket(response.query_result.block_list[current_id].loc_ip, response.query_result.block_list[current_id].loc_port);
+            printf("Connection to DN: %s\n",strerror(errno));
+            send_data(dn_socket, &request2, sizeof(request2));
+            
+            current_id++;
+            data_sent += sizeof(buffer);
+        }
+        
 
 	fclose(file);
 	return 0;
