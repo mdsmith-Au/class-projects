@@ -14,7 +14,8 @@ int mainLoop()
 {
 	//we don't consider concurrent operations in this assignment
 	int server_socket = -1;
-	//TODO: create a server socket and listen on it, you can implement dfs_common.c and call it here
+	//Create a server socket and listen on it, you can implement dfs_common.c and call it here
+        server_socket = create_server_tcp_socket(datanode_listen_port);
         
 	assert (server_socket != INVALID_SOCKET);
 
@@ -23,10 +24,12 @@ int mainLoop()
 	{
 		sockaddr_in client_address;
 		int client_socket = -1;
-		//TODO: accept the client request
+		// Accept the client request
+                client_socket = accept(server_socket, &client_address, sizeof (client_address));
 		assert(client_socket != INVALID_SOCKET);
 		dfs_cli_dn_req_t request;
-		//TODO: receive data from client_socket, and fill it to request
+		// Receive data from client_socket, and fill it to request
+                receive_data(client_socket, &request, sizeof(request));
 		requests_dispatcher(client_socket, request);
 		close(client_socket);
 	}
@@ -34,7 +37,7 @@ int mainLoop()
 	return 0;
 }
 
-static void *heartbeat()
+static void *heartbeat(char* namenode_ip)
 {
 	dfs_cm_datanode_status_t datanode_status;
 	datanode_status.datanode_id = datanode_id;
@@ -43,9 +46,13 @@ static void *heartbeat()
 	for (;;)
 	{
 		int heartbeat_socket = -1;
-		//TODO: create a new socket to the namenode, assign file descriptor id to heartbeat_socket
+		//Create a new socket to the namenode, assign file descriptor id to heartbeat_socket
+                heartbeat_socket = create_client_tcp_socket(namenode_ip, 50030);
+                printf("Error when connecting! %s\n",strerror(errno)); 
+                
 		assert(heartbeat_socket != INVALID_SOCKET);
 		//send datanode_status to namenode
+                send_data(heartbeat_socket, &datanode_status, sizeof(datanode_status));
 		close(heartbeat_socket);
 		sleep(HEARTBEAT_INTERVAL);
 	}
@@ -67,7 +74,8 @@ int start(int argc, char **argv)
 	working_directory = (char *)malloc(sizeof(char) * strlen(argv[4]) + 1);
 	strcpy(working_directory, argv[4]);
 	//start one thread to report to the namenode periodically
-	//TODO: start a thread to report heartbeat
+	//Start a thread to report heartbeat
+        create_thread(heartbeat, namenode_ip);
 
 	return mainLoop();
 }
@@ -78,7 +86,8 @@ int read_block(int client_socket, const dfs_cli_dn_req_t *request)
 	assert(request != NULL);
 	char buffer[DFS_BLOCK_SIZE];
 	ext_read_block(request->block.owner_name, request->block.block_id, (void *)buffer);
-	//TODO:response the client with the data
+	//Responsd the client with the data
+        send_data(client_socket, &request, sizeof(request));
 	return 0;
 }
 

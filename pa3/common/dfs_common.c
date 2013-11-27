@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <netdb.h>
 /**
  * create a thread and activate it
  * entry_point - the function exeucted by the thread
@@ -10,8 +11,9 @@
  */
 inline pthread_t * create_thread(void * (*entry_point)(void*), void *args)
 {
-	pthread_t * thread;
-        pthread_create(thread, NULL, entry_point, args);
+	pthread_t thread;
+//        pthread_create(thread, NULL, entry_point, NULL);
+        pthread_create(&thread, NULL, entry_point, args);
 
 	return thread;
 }
@@ -41,11 +43,11 @@ int create_client_tcp_socket(char* address, int port)
         if (server == NULL) {
             return -1;
         }
-        memset(socketAddress, 0, sizeof(socketAddress));
+        memset(&socketAddress, 0, sizeof(socketAddress));
         
         socketAddress.sin_family = AF_INET;
         socketAddress.sin_port = htons(port);
-        memcpy(socketAddress.sin_addr.s_addr, server_h_addr, server->h_length);
+        memcpy(&socketAddress.sin_addr.s_addr, server->h_addr_list[0], server->h_length);
         
         if (connect(socket,(struct sockaddr *) &socketAddress, sizeof(socketAddress)) < 0 ) {
             return -1;
@@ -64,15 +66,11 @@ int create_server_tcp_socket(int port)
 	//TODO: listen on local port
         
         struct sockaddr_in socketAddress;
-        memset(socketAddress, 0, sizeof(socketAddress));
+        memset(&socketAddress, 0, sizeof(socketAddress));
         
         socketAddress.sin_family = AF_INET;
         socketAddress.sin_port = htons(port);
         socketAddress.sin_addr.s_addr = INADDR_ANY;
-        
-        int iSetOption = 1;
-        setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption,
-        sizeof(iSetOption));
         
         if ( bind( socket, (struct sockaddr *) &socketAddress, sizeof(socketAddress) ) < 0 ) {
             return -1;
@@ -95,7 +93,13 @@ void send_data(int socket, void* data, int size)
 	assert(size >= 0);
 	if (socket == INVALID_SOCKET) return;
         
+//        ssize_t bytes_sent = 0;
+//        while (bytes_sent != size) {
+//            bytes_sent = send(socket, data, size, 0);
+//        }
         send(socket, data, size, 0);
+        
+        
 }
 
 /**
@@ -110,5 +114,9 @@ void receive_data(int socket, void* data, int size)
 	assert(size >= 0);
 	if (socket == INVALID_SOCKET) return;
 	
+//        ssize_t bytes_received = 0;
+//        while (bytes_received != size) {
+//            bytes_received = recv(socket, data, size, 0);
+//        }
         recv(socket, data, size, 0);
 }

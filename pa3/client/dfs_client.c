@@ -6,7 +6,7 @@ int connect_to_nn(char* address, int port)
 {
 	assert(address != NULL);
 	assert(port >= 1 && port <= 65535);
-	//TODO: create a socket and connect it to the server (address, port)
+	//Create a socket and connect it to the server (address, port)
 	//assign return value to client_socket 
 	return create_client_tcp_socket( address, port);
 }
@@ -48,11 +48,11 @@ int push_file(int namenode_socket, const char* local_path)
         request.file_size = (int)info.st_size;
         request.req_type = 1;
         
-        send_data(namenode_socket, request, sizeof(request));
+        send_data(namenode_socket, &request, sizeof(request));
 	
 	//TODO:Receive the response
 	dfs_cm_file_res_t response;
-        receive_data(namenode_socket, response, sizeof(response));
+        receive_data(namenode_socket, &response, sizeof(response));
         
 
 	//TODO: Send blocks to datanodes one by one
@@ -68,11 +68,21 @@ int pull_file(int namenode_socket, const char *filename)
 
 	//TODO: fill the request, and send
 	dfs_cm_client_req_t request;
+        strcpy(request.file_name, filename);
+        request.req_type = 0;
+        send_data(namenode_socket, &request, sizeof(request));
 
 	//TODO: Get the response
 	dfs_cm_file_res_t response;
+        receive_data(namenode_socket, &response, sizeof(response));
 	
 	//TODO: Receive blocks from datanodes one by one
+        int i = 0;
+//        for (i = 0; i < response.query_result.blocknum; i++) {
+//            char *ip[] = response.query_result.block_list[i].loc_ip;
+//            int port = response.query_result.block_list[i].loc_port;
+//            //TODO
+//        }
 	
 	FILE *file = fopen(filename, "wb");
 	//TODO: resemble the received blocks into the complete file
@@ -91,10 +101,11 @@ dfs_system_status *get_system_info(int namenode_socket)
         request.req_type = 2;
 	
 	//TODO: get the response
-	dfs_system_status *response;
+	dfs_system_status* response;
+        response = malloc(sizeof(dfs_system_status));
         
-        send_data(namenode_socket, request, sizeof(request));
-        receive_data(namenode_socket, response, sizeof(response));
+        send_data(namenode_socket, &request, sizeof(request));
+        receive_data(namenode_socket, response, sizeof(dfs_system_status));
 
 	return response;
 }

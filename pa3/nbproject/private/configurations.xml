@@ -8,6 +8,8 @@
         <in>fs.c</in>
         <in>fs.h</in>
       </df>
+      <df name="build">
+      </df>
       <df name="c_tutorial">
         <in>c_tutorial.c</in>
         <in>client.c</in>
@@ -87,11 +89,14 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" "50070"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" 50070</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" 127.0.0.1 50070</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" 127.0.0.1 50070</runcommand>
         <rundir>.</rundir>
-        <buildfirst>false</buildfirst>
-        <terminal-type>0</terminal-type>
+        <buildfirst>true</buildfirst>
+        <terminal-type>1</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>
         </environment>
