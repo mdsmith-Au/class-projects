@@ -72,7 +72,7 @@ int register_datanode(int heartbeat_socket) {
 
         int datanode_socket = accept(heartbeat_socket, (struct sockaddr *) &client_address, &client_address_length);
         //Accept connection from DataNodes and assign return value to datanode_socket;
-        printf("Error when connecting! %s\n",strerror(errno)); 
+        printf("Heartbeat Connection: %s\n",strerror(errno)); 
         assert(datanode_socket != INVALID_SOCKET);
         dfs_cm_datanode_status_t datanode_status;
         //Receive datanode's status via datanode_socket
@@ -89,8 +89,8 @@ int register_datanode(int heartbeat_socket) {
             }
             
             dnlist[pos]->dn_id = datanode_status.datanode_id;
-            memcpy(&dnlist[pos]->ip, &client_address.sin_addr.s_addr, sizeof(client_address.sin_addr.s_addr));
-            dnlist[pos]->port = client_address.sin_port;
+            memcpy(&dnlist[pos]->ip, inet_ntoa(client_address.sin_addr), sizeof(dnlist[pos]->ip));
+            dnlist[pos]->port = datanode_status.datanode_listen_port;
 
             int i = 0;
             dncnt = 0;
@@ -149,7 +149,9 @@ int get_file_receivers(int client_socket, dfs_cm_client_req_t request) {
         block_data.block_id = first_unassigned_block_index;
         memcpy(block_data.loc_ip, dnlist[next_data_node_index % dncnt]->ip, sizeof(block_data.loc_ip));
         block_data.loc_port = dnlist[next_data_node_index % dncnt]->port;
-        memcpy((*file_image)->block_list, &block_data, sizeof(block_data));
+        strcpy(block_data.owner_name, request.file_name);
+        
+        memcpy(&(*file_image)->block_list[next_data_node_index], &block_data, sizeof(block_data));
         next_data_node_index++;
         first_unassigned_block_index++;
     }
@@ -174,7 +176,8 @@ int get_file_location(int client_socket, dfs_cm_client_req_t request) {
         
         //Fill the response and send it back to the client
 
-        memcpy(&response.query_result, file_image->block_list, sizeof(file_image->block_list));
+        memcpy(&response.query_result, file_image, sizeof(dfs_cm_file_t));
+        printf("Sending response for read of size %d\n", sizeof(response));
         send_data(client_socket, &response, sizeof(response));
 
         return 0;

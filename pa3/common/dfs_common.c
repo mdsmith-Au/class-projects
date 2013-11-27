@@ -93,11 +93,10 @@ void send_data(int socket, void* data, int size)
 	assert(size >= 0);
 	if (socket == INVALID_SOCKET) return;
         
-//        ssize_t bytes_sent = 0;
-//        while (bytes_sent != size) {
-//            bytes_sent = send(socket, data, size, 0);
-//        }
-        send(socket, data, size, 0);
+        ssize_t bytes_sent = 0;
+        while (bytes_sent < size) {
+            bytes_sent += send(socket, data + bytes_sent, size - bytes_sent, 0);
+        }
         
         
 }
@@ -114,9 +113,8 @@ void receive_data(int socket, void* data, int size)
 	assert(size >= 0);
 	if (socket == INVALID_SOCKET) return;
 	
-//        ssize_t bytes_received = 0;
-//        while (bytes_received != size) {
-//            bytes_received = recv(socket, data, size, 0);
-//        }
-        recv(socket, data, size, 0);
+        ssize_t bytes_received = 0;
+        while (bytes_received < size) {
+            bytes_received += recv(socket, data + bytes_received, size - bytes_received, 0);
+        }
 }

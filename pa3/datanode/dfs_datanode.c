@@ -23,9 +23,12 @@ int mainLoop()
 	for (;;)
 	{
 		sockaddr_in client_address;
+                socklen_t client_address_length = sizeof (client_address);
+                
 		int client_socket = -1;
 		// Accept the client request
-                client_socket = accept(server_socket, &client_address, sizeof (client_address));
+                printf("Accepting connection from client\n");
+                client_socket = accept(server_socket, (struct sockaddr *) &client_address, &client_address_length);
 		assert(client_socket != INVALID_SOCKET);
 		dfs_cli_dn_req_t request;
 		// Receive data from client_socket, and fill it to request
@@ -48,7 +51,7 @@ static void *heartbeat(char* namenode_ip)
 		int heartbeat_socket = -1;
 		//Create a new socket to the namenode, assign file descriptor id to heartbeat_socket
                 heartbeat_socket = create_client_tcp_socket(namenode_ip, 50030);
-                printf("Error when connecting! %s\n",strerror(errno)); 
+                printf("Heartbeat Connection: %s\n",strerror(errno)); 
                 
 		assert(heartbeat_socket != INVALID_SOCKET);
 		//send datanode_status to namenode
@@ -87,19 +90,22 @@ int read_block(int client_socket, const dfs_cli_dn_req_t *request)
 	char buffer[DFS_BLOCK_SIZE];
 	ext_read_block(request->block.owner_name, request->block.block_id, (void *)buffer);
 	//Responsd the client with the data
-        send_data(client_socket, &request, sizeof(request));
+        memcpy(request->block.content, buffer, sizeof(buffer));
+        send_data(client_socket, request, sizeof(dfs_cli_dn_req_t));
 	return 0;
 }
 
 int create_block(const dfs_cli_dn_req_t* request)
 {
-	ext_write_block(request->block.owner_name, request->block.block_id, (void *)request->block.content);
+        printf("Creating block with block id %d\n", request->block.block_id);
+        ext_write_block(request->block.owner_name, request->block.block_id, (void *)request->block.content);
 	return 0;
 }
 
 void requests_dispatcher(int client_socket, dfs_cli_dn_req_t request)
 {
-	switch (request.op_type)
+        printf("Datanode request type %d received\n", request.op_type);
+        switch (request.op_type)
 	{
 		case 0:
 			read_block(client_socket, &request);

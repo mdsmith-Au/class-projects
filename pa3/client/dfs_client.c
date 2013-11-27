@@ -1,6 +1,7 @@
 #include "client/dfs_client.h"
 #include "datanode/ext.h"
 #include <sys/stat.h>
+#include <errno.h>
 
 int connect_to_nn(char* address, int port)
 {
@@ -44,7 +45,7 @@ int push_file(int namenode_socket, const char* local_path)
         strcpy(request.file_name, local_path);
         //Get file size
         struct stat info;
-        stat(file, &info);
+        stat(local_path, &info);
         request.file_size = (int)info.st_size;
         request.req_type = 1;
         
@@ -56,38 +57,63 @@ int push_file(int namenode_socket, const char* local_path)
         
 
 	//TODO: Send blocks to datanodes one by one
+        int i;
+        for (i = 0 ; i < response.query_result.blocknum; i++) {
+            dfs_cli_dn_req_t request2;
+            request2.op_type = 1;
+            fseek(file, response.query_result.block_list[i].block_id * DFS_BLOCK_SIZE, SEEK_SET);
+            fread(request2.block.content, sizeof(char), DFS_BLOCK_SIZE, file);
+            request2.block.block_id = response.query_result.block_list[i].block_id;
+            strcpy(request2.block.owner_name, response.query_result.block_list[i].owner_name);
+            int dn_socket = create_client_tcp_socket(response.query_result.block_list[i].loc_ip, response.query_result.block_list[i].loc_port);
+            printf("Connection to DN: %s\n",strerror(errno));
+            send_data(dn_socket, &request2, sizeof(request2));
+        }
 
 	fclose(file);
 	return 0;
 }
 
-int pull_file(int namenode_socket, const char *filename)
-{
-	assert(namenode_socket != INVALID_SOCKET);
-	assert(filename != NULL);
+int pull_file(int namenode_socket, const char *filename) {
+    assert(namenode_socket != INVALID_SOCKET);
+    assert(filename != NULL);
+    FILE* file = fopen(filename, "wb");
 
-	//TODO: fill the request, and send
-	dfs_cm_client_req_t request;
-        strcpy(request.file_name, filename);
-        request.req_type = 0;
-        send_data(namenode_socket, &request, sizeof(request));
+    //TODO: fill the request, and send
+    dfs_cm_client_req_t request;
+    strcpy(request.file_name, filename);
+    request.req_type = 0;
+    send_data(namenode_socket, &request, sizeof (request));
 
-	//TODO: Get the response
-	dfs_cm_file_res_t response;
-        receive_data(namenode_socket, &response, sizeof(response));
-	
-	//TODO: Receive blocks from datanodes one by one
-        int i = 0;
-//        for (i = 0; i < response.query_result.blocknum; i++) {
-//            char *ip[] = response.query_result.block_list[i].loc_ip;
-//            int port = response.query_result.block_list[i].loc_port;
-//            //TODO
-//        }
-	
-	FILE *file = fopen(filename, "wb");
-	//TODO: resemble the received blocks into the complete file
-	fclose(file);
-	return 0;
+    //TODO: Get the response
+    dfs_cm_file_res_t response;
+    receive_data(namenode_socket, &response, sizeof (response));
+
+    //TODO: Receive blocks from datanodes one by one
+    int i;
+    for (i = 0; i < response.query_result.blocknum; i++) {
+        dfs_cli_dn_req_t request2;
+        request2.op_type = 0;
+        
+        request2.block.block_id = response.query_result.block_list[i].block_id;
+        strcpy(request2.block.owner_name, response.query_result.block_list[i].owner_name);
+        int dn_socket = create_client_tcp_socket(response.query_result.block_list[i].loc_ip, response.query_result.block_list[i].loc_port);
+        printf("Connection to DN: %s\n", strerror(errno));
+        
+        send_data(dn_socket, &request2, sizeof (request2));
+        
+        // Response from datanode
+        dfs_cli_dn_req_t response2;
+        receive_data(dn_socket, &response2, sizeof(response2));
+        
+        fseek(file, response2.block.block_id * DFS_BLOCK_SIZE, SEEK_SET);
+        fwrite(response2.block.content, sizeof (char), DFS_BLOCK_SIZE, file);
+    }
+
+//    FILE *file = fopen(filename, "wb");
+    //TODO: resemble the received blocks into the complete file
+    fclose(file);
+    return 0;
 }
 
 dfs_system_status *get_system_info(int namenode_socket)
