@@ -29,8 +29,7 @@ int test_case_1(char **argv, int op_type)
 	FILE *local_fp = fopen("local_file", "rb");
 	char *local_buf = (char *) malloc(sizeof(char) * DFS_BLOCK_SIZE);
 	char *buf = (char *) malloc(sizeof(char) * DFS_BLOCK_SIZE);
-//	sleep(5);
-        sleep(1);
+	sleep(5);
 	str_arr[0] = blk_0;
 	FILE *fp = fopen(str_arr[0], "rb");
 	if (fp == NULL) return 1;
@@ -60,8 +59,7 @@ int test_case_2(char **argv, int op_type)
 	char *buf = (char *) malloc(sizeof(char) * 1024);
 	char *buf_1 = (char *) malloc(sizeof(char) * 1024);
 	FILE *fp = fopen("local_file", "rb");
-//	sleep(5);
-        sleep(1);
+	sleep(5);
 	fread(buf, 1024, 1, fp);
 	fclose(fp);
 	fp = fopen("local_file_1", "rb");
@@ -80,8 +78,7 @@ int test_case_3(char **argv, int op_type)
 	{
 		return 1;
 	}
-//	sleep(5);
-        sleep(1);
+	sleep(5);
 	int ret = 0;
 	int i = 0;
 	char * str_arr[4];
@@ -132,8 +129,7 @@ int test_case_4(char **argv, int op_type)
 	{
 		return 1;
 	}
-//	sleep(5);
-        sleep(1);
+	sleep(5);
 	int ret = 0;
 	FILE *fp = fopen("local_file_medium", "rb");
 	char *buf = (char *) malloc(sizeof(char) * 4096);
@@ -157,8 +153,7 @@ int test_case_5(char **argv, int op_type)
 	{
 		return 1;
 	}
-//	sleep(5);
-        sleep(1);
+	sleep(5);
 	int ret = 0;
 	int i = 0;
 	char * str_arr[8];
@@ -218,8 +213,7 @@ int test_case_6(char **argv, int op_type)
 	{
 		return 1;
 	}
-//	sleep(5);
-        sleep(1);
+	sleep(5);
 	int ret = 0;
 	FILE *fp = fopen("local_file_large", "rb");
 	char *buf = (char *) malloc(sizeof(char) * 8192);
@@ -265,8 +259,7 @@ int test_case_8(char **argv, int op_type)
 		fclose(local_fp);
 		return 1; 
 	}
-//	sleep(5);
-        sleep(1);
+	sleep(5);
 	str_arr[0] = blk_0;
 	str_arr[1] = blk_1;
 	for (; i < 2; i++) {
@@ -351,6 +344,5 @@ int main(int argc, char **argv)
 //	//modify the file
 	append_data("local_file", 1024);
 	printf("TEST CASE 8:%s\n", result[test_case_8(argv, 3)]);
-        printf("\n");
 	return 0;
 }
