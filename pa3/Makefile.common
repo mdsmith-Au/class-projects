@@ -1,5 +1,5 @@
 CC=gcc
 LD=gcc
 
-CC_FLAGS= -g -I../include 
+CC_FLAGS= -g -I../include -Wall -Wextra -Ofast
 LD_FLAGS= -pthread 
