@@ -1,0 +1,48 @@
+add
+ado
+age
+ago
+aid
+ail
+aim
+air
+and
+any
+ape
+apt
+arc
+are
+ark
+arm
+art
+ash
+ask
+auk
+awe
+awl
+aye
+bad
+bag
+ban
+bat
+bee
+boa
+ear
+eel
+eft
+far
+fat
+fit
+lee
+oaf
+rat
+tar
+tie
+STATE START
+A1 add
+A2 ado
+A3 age
+D1 ago
+D2 aid
+D3 ail
+STATE END
