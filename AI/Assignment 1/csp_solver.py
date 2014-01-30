@@ -329,16 +329,17 @@ if __name__=="__main__":
     print_state(start_state, out_file)
 
     solution_found = False
+    num_iterations = 0
 
     while(not solution_found):
 
         rand_state = random_state(start_state,word_list)
         climbed_state = hill_climb(rand_state, word_list)
-
+        num_iterations = num_iterations + 1
 
         print_state(climbed_state, out_file)
 
-        if (count_conflicts(climbed_state) == 0):
+        if (count_conflicts(climbed_state) == 0) or (num_iterations > 1000):
             solution_found = True
 
 
