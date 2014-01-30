@@ -1,3 +1,4 @@
+import copy
 import sys
 import random
 
@@ -153,6 +154,110 @@ def check_solution(input_file, output_file):
     print "Found {0:d} conflicts in best state from {1:s}.".format(min_val, output_file)
     return {'start_val': start_val, 'min_val': min_val}
 
+
+def hill_climb(state_dict, word_list):
+    """Executes the well-known hill-climbing algorithm,
+    using state_dict as a starting point."""
+
+    continue_climb = True
+    while (continue_climb):
+
+        neighbours = []
+        num_conflicts = score_state(state_dict, word_list)
+
+        # Get letters of A1
+        first_letter_a1 = state_dict["A1"][0]
+        second_letter_a1 = state_dict["A1"][1]
+        third_letter_a1 = state_dict["A1"][2]
+
+        # Get letters of D1
+        first_letter_d1 = state_dict["D1"][0]
+        second_letter_d1 = state_dict["D1"][1]
+        third_letter_d1 = state_dict["D1"][2]
+
+        # Generate pruned word lists of appropriate letters to start with
+        word_list_d1 = []
+        for i in word_list:
+            if i[0] == first_letter_a1:
+                word_list_d1.append(i)
+
+        word_list_d2 = []
+        for i in word_list:
+            if i[0] == second_letter_a1:
+                word_list_d2.append(i)
+
+        word_list_d3 = []
+        for i in word_list:
+            if i[0] == third_letter_a1:
+                word_list_d3.append(i)
+
+        word_list_a1 = []
+        for i in word_list:
+            if i[0] == first_letter_d1:
+                word_list_a1.append(i)
+
+        word_list_a2 = []
+        for i in word_list:
+            if i[0] == second_letter_d1:
+                word_list_a2.append(i)
+
+        word_list_a3 = []
+        for i in word_list:
+            if i[0] == third_letter_d1:
+                word_list_a3.append(i)
+
+        # Create list of neighbours.  Will contain combinations
+        # of D1,D2,D3, A1,A2,A3
+        for i in word_list_d1:
+            temp_state = copy.deepcopy(state_dict)
+            temp_state["D1"] = i
+            neighbours.append(temp_state)
+
+        for i in word_list_d2:
+            temp_state = copy.deepcopy(state_dict)
+            temp_state["D2"] = i
+            neighbours.append(temp_state)
+
+        for i in word_list_d3:
+            temp_state = copy.deepcopy(state_dict)
+            temp_state["D3"] = i
+            neighbours.append(temp_state)
+
+        for i in word_list_a1:
+            temp_state = copy.deepcopy(state_dict)
+            temp_state["A1"] = i
+            neighbours.append(temp_state)
+
+        for i in word_list_a2:
+            temp_state = copy.deepcopy(state_dict)
+            temp_state["A2"] = i
+            neighbours.append(temp_state)
+
+        for i in word_list_a3:
+            temp_state = copy.deepcopy(state_dict)
+            temp_state["A3"] = i
+            neighbours.append(temp_state)
+
+        #print("neighbours: " + str(neighbours))
+
+        min_conflicts = sys.maxsize
+
+        # Neighbours now generated; find values
+        for neighbour in neighbours:
+            if score_state(neighbour,word_list) < min_conflicts:
+                best_neighbour = neighbour
+                min_conflicts = score_state(neighbour,word_list)
+
+        # Best result we found not good enough (optimun), leave
+        if num_conflicts <= min_conflicts:
+            continue_climb = False
+
+        else:
+            state_dict = best_neighbour
+
+    return state_dict
+
+
 ################
 # Instructions #
 #--------------#################################################################
@@ -192,15 +297,33 @@ if __name__=="__main__":
     if (mode == 1):
         print "Parsing input file: {0}".format(in_file)
         [word_list, start_state] = parse_input_file(in_file)
-        copies = 10
+
         out_file = open(out_file_name, 'w')
-        print "Printing {0} copies of start state to {1}.".format(copies, str(out_file))
+
+        #print "Printing {0} copies of start state to {1}.".format(copies, str(out_file))
+
         print_state(start_state, out_file)
-        for i in range(copies):
-            print_state(random_state(start_state,word_list), out_file)
+
+        solution_found = False
+
+        while(not solution_found):
+
+            rand_state = random_state(start_state,word_list)
+            climbed_state = hill_climb(rand_state, word_list)
+
+
+            print_state(climbed_state, out_file)
+
+            if (count_conflicts(climbed_state) == 0):
+                solution_found = True
+
+
         out_file.close()
+
         print "Parsing states described by {0}.".format(out_file_name)
         state_dicts = parse_state_file(out_file_name)
+
+
         print "{0:s} described {1:d} states.".format(out_file_name, len(state_dicts))
     elif (mode == 2):
         print "Checking the score of output file {0}, given input file {1}.".format(out_file_name, in_file)
