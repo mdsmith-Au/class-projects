@@ -165,78 +165,14 @@ def hill_climb(state_dict, word_list):
         neighbours = []
         num_conflicts = score_state(state_dict, word_list)
 
-        # Get letters of A1
-        first_letter_a1 = state_dict["A1"][0]
-        second_letter_a1 = state_dict["A1"][1]
-        third_letter_a1 = state_dict["A1"][2]
-
-        # Get letters of D1
-        first_letter_d1 = state_dict["D1"][0]
-        second_letter_d1 = state_dict["D1"][1]
-        third_letter_d1 = state_dict["D1"][2]
-
-        # Generate pruned word lists of appropriate letters to start with
-        word_list_d1 = []
-        for i in word_list:
-            if i[0] == first_letter_a1:
-                word_list_d1.append(i)
-
-        word_list_d2 = []
-        for i in word_list:
-            if i[0] == second_letter_a1:
-                word_list_d2.append(i)
-
-        word_list_d3 = []
-        for i in word_list:
-            if i[0] == third_letter_a1:
-                word_list_d3.append(i)
-
-        word_list_a1 = []
-        for i in word_list:
-            if i[0] == first_letter_d1:
-                word_list_a1.append(i)
-
-        word_list_a2 = []
-        for i in word_list:
-            if i[0] == second_letter_d1:
-                word_list_a2.append(i)
-
-        word_list_a3 = []
-        for i in word_list:
-            if i[0] == third_letter_d1:
-                word_list_a3.append(i)
-
         # Create list of neighbours.  Will contain combinations
         # of D1,D2,D3, A1,A2,A3
-        for i in word_list_d1:
-            temp_state = copy.deepcopy(state_dict)
-            temp_state["D1"] = i
-            neighbours.append(temp_state)
+        for j in state_dict:
+            for i in word_list:
+                temp_state = copy.deepcopy(state_dict)
+                temp_state[j] = i
+                neighbours.append(temp_state)
 
-        for i in word_list_d2:
-            temp_state = copy.deepcopy(state_dict)
-            temp_state["D2"] = i
-            neighbours.append(temp_state)
-
-        for i in word_list_d3:
-            temp_state = copy.deepcopy(state_dict)
-            temp_state["D3"] = i
-            neighbours.append(temp_state)
-
-        for i in word_list_a1:
-            temp_state = copy.deepcopy(state_dict)
-            temp_state["A1"] = i
-            neighbours.append(temp_state)
-
-        for i in word_list_a2:
-            temp_state = copy.deepcopy(state_dict)
-            temp_state["A2"] = i
-            neighbours.append(temp_state)
-
-        for i in word_list_a3:
-            temp_state = copy.deepcopy(state_dict)
-            temp_state["A3"] = i
-            neighbours.append(temp_state)
 
         #print("neighbours: " + str(neighbours))
 
