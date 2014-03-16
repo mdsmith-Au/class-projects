@@ -341,6 +341,7 @@ if __name__=="__main__":
 
         if (count_conflicts(climbed_state) == 0) or (num_iterations > 1000):
             solution_found = True
+	    print str(climbed_state)
 
 
     out_file.close()
