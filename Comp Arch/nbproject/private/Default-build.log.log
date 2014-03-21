@@ -1,0 +1,4 @@
+cc -c -o build/main.o main.c -g -I -Wall
+cc -c -o build/ecse425proj.o ecse425proj.c -g -I -Wall
+cc -c -o build/ecse425projOPT.o ecse425projOPT.c -g -I -Wall
+gcc -o build/ecse425proj build/main.o build/ecse425proj.o build/ecse425projOPT.o -g -I -Wall 
