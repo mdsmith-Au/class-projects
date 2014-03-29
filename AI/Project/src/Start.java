@@ -18,7 +18,7 @@ public class Start {
      */
     public static void main(String[] args) {
         
-        new Thread(new boardgame.Server(new halma.CCBoard(), true, true, 8123, 10000)).start();
+        new Thread(new boardgame.Server(new halma.CCBoard(), true, true, 8123, 1000)).start();
         
         try {
             Thread.sleep(200);
@@ -31,7 +31,7 @@ public class Start {
         new Thread(client).start();
         
         for (int i = 0; i < 3; i++) {
-            new Thread(new Client(new CCRandomPlayer(), "localhost", 8123)).start();
+            new Thread(new Client(new CCRandomPlayer("Rand " + i), "localhost", 8123)).start();
         }
         
 

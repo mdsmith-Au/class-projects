@@ -8,6 +8,7 @@ import halma.CCMove;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Minimax halma player.
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 
 public class s260481943Player extends Player {
 
+    /*
     private Polygon destination;
     private Point destinationPoint;
     private Point destinationPointEnemy1;
@@ -52,21 +54,24 @@ public class s260481943Player extends Player {
     private int allyP2 = 1;
     private int allyP3 = 0;
     
-    private int ally;
+    private int ally;*/
     
-    private int maxTurns = 0;
+    private int maxSimulations = 200;
+    private long Timeout = 950;
+    
+    private Random rand = new Random();
 
     /**
      * Provide a default public constructor
      */
     public s260481943Player() {
         super("260481943");
-        destination = new Polygon();
+        //destination = new Polygon();
     }
 
     public s260481943Player(String s) {
         super(s);
-        destination = new Polygon();
+        //destination = new Polygon();
     }
 
     @Override
@@ -75,6 +80,8 @@ public class s260481943Player extends Player {
     @Override
     public Move chooseMove(Board theboard) 
     {
+        
+        /*
         // Run a check (once) as to where we are
         if (!cornerCheckComplete) {
             if (this.playerID == 0) {
@@ -107,16 +114,59 @@ public class s260481943Player extends Player {
                 destinationPointEnemy2 = BL;
             }
             cornerCheckComplete = true;
-        }
+        }*/
 
         // Cast the arguments to the objects we want to work with
         CCBoard board = (CCBoard) theboard;
 
-        return minimaxDecision(board);
+        return monteCarlo(board);
     }
 
+    private ArrayList<CCMove> getMovesForThisPlayerOnly(CCBoard board) {
+        // Make list of moves that are for us ONLY from list of legal moves
+        ArrayList<CCMove> ourMoves = new ArrayList<>();
+        for (CCMove entry : board.getLegalMoves()) {
+            if (entry.getPlayerID() == this.playerID) {
+                ourMoves.add(entry);
+            }
+        }
+        return ourMoves;
+    }
     
-    
+    private CCMove monteCarlo(CCBoard board) {
+        ResultList evaluations = new ResultList();
+        long time = System.currentTimeMillis();
+        for (int i = 0; i < maxSimulations; i++) {
+            // Get legal moves
+            ArrayList<CCMove> legalMoves = getMovesForThisPlayerOnly(board);
+            // Chose random move
+            CCMove randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
+            
+            CCBoard board2 = (CCBoard) board.clone();
+            board2.move(randomMove);
+            
+            // play out game until end
+            while(board2.getWinner() == CCBoard.NOBODY) {
+                ArrayList<CCMove> moveList = board2.getLegalMoves();
+                CCMove randMoveAnyone = moveList.get(rand.nextInt(moveList.size()));
+                board2.move(randMoveAnyone);
+            }
+            // game over; we won
+            if (board2.getWinner() == this.playerID) {
+                evaluations.addMove(randomMove, 1);
+            }
+            // we lost
+            else {
+                evaluations.addMove(randomMove, -1);
+            }
+            if (System.currentTimeMillis() - time > Timeout){
+                break;
+            }
+        }
+        return evaluations.getBest();
+
+    }
+    /*
     private CCMove minimaxDecision(CCBoard board) {
 
         evalList listOfValues = new evalList();
@@ -158,17 +208,7 @@ public class s260481943Player extends Player {
         return listOfValues.getWorstEval();
         
     }
- 
-    private ArrayList<CCMove> getMovesForThisPlayerOnly(CCBoard board) {
-        // Make list of moves that are for us ONLY from list of legal moves
-        ArrayList<CCMove> ourMoves = new ArrayList<>();
-        for (CCMove entry : board.getLegalMoves()) {
-            if (entry.getPlayerID() == this.playerID) {
-                ourMoves.add(entry);
-            }
-        }
-        return ourMoves;
-    }
+
 
     private boolean isTerminal(CCBoard board) {
         if (board.getTurnsPlayed() > maxTurns) {
@@ -210,5 +250,5 @@ public class s260481943Player extends Player {
             // Note: force winner to enemy 1, but it doesn't really matter who
             board.forceWinner(enemies[0]);
         }
-    }
+    }*/
 }
