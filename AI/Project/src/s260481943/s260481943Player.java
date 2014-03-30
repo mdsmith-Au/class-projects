@@ -180,7 +180,7 @@ public class s260481943Player extends Player{
             }
             int eval = 0;
             if (randomMove.isHop()) {
-                eval = 1;
+                eval = 2;
             }
             if (randomMove.getFrom() != null && randomMove.getFrom().distance(destinationPoint) > 15) {
                 eval+=2;
@@ -191,7 +191,7 @@ public class s260481943Player extends Player{
             }
             // we lost
             else {
-                evaluations.addMove(randomMove, eval - 3);
+                evaluations.addMove(randomMove, eval - 4);
             }
             if (System.currentTimeMillis() - startTime > Timeout){
                 break;
