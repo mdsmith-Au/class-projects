@@ -20,36 +20,42 @@ import java.util.Set;
 
 public class ResultList {
     
-    private HashMap storage;
+    private final HashMap<CCMove, Integer> storage;
 
-    
+    static class theLock extends Object {
+    }
+    static private final theLock lockObject = new theLock();
+
     public ResultList() {
-        storage = new HashMap();
+        storage = new HashMap<>();
     }
-    
+
     public void addMove(CCMove move, int status) {
-        
-        Integer statusObj = (Integer)status;
+
+        Integer statusObj = (Integer) status;
         // Item already exists, modify entry
-        if (storage.containsKey(move)) {
-            storage.put(move, (Integer)storage.get(move) + status);
-        }
-        else {
-            storage.put(move, statusObj);
+        synchronized (lockObject) {
+            if (storage.containsKey(move)) {
+                storage.put(move, storage.get(move) + status);
+            } else {
+                storage.put(move, statusObj);
+            }
         }
     }
-    
+
     public CCMove getBest() {
         int maxValue = Integer.MIN_VALUE;
         CCMove bestMove = null;
-        Set<Map.Entry<CCMove, Integer>> set = storage.entrySet();
-        for (Map.Entry<CCMove, Integer> map: set) {
-            if (map.getValue() > maxValue) {
-                maxValue = map.getValue();
-                bestMove = map.getKey();
+        synchronized (lockObject) {
+            Set<Map.Entry<CCMove, Integer>> set = storage.entrySet();
+            for (Map.Entry<CCMove, Integer> map : set) {
+                if (map.getValue() > maxValue) {
+                    maxValue = map.getValue();
+                    bestMove = map.getKey();
+                }
             }
+            return bestMove;
         }
-        return bestMove;
     }
 
 }

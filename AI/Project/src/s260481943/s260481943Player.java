@@ -15,111 +15,134 @@ import java.util.Random;
  * 
  */
 
-public class s260481943Player extends Player {
+public class s260481943Player extends Player{
 
-    /*
-    private Polygon destination;
+    
+    private Polygon home;
     private Point destinationPoint;
-    private Point destinationPointEnemy1;
-    private Point destinationPointEnemy2;
+//    private Point destinationPointEnemy1;
+//    private Point destinationPointEnemy2;
 
     private int[] xCoord_BL = {0, 0, 1, 2, 3, 3};
     private int[] yCoord_BL = {15, 12, 12, 13, 14, 15};
-    private Point BL = new Point(0,15);
+    private final Point BL;
 
     private int[] xCoord_BR = {15, 12, 12, 13, 14, 15};
     private int[] yCoord_BR = {15, 15, 14, 13, 12, 12};
-    private Point BR = new Point(15,15);
+    private final Point BR;
 
     private int[] xCoord_TL = {0, 3, 3, 2, 1, 0};
     private int[] yCoord_TL = {0, 0, 1, 2, 3, 3};
-    private Point TL = new Point(0,0);
+    private final Point TL;
 
     private int[] xCoord_TR = {15, 15, 14, 13, 12, 12};
     private int[] yCoord_TR = {0, 3, 3, 2, 1, 0};
-    private Point TR = new Point(15,0);
-
-    private boolean cornerCheckComplete = false;
+    private final Point TR;
     
+//    private int[] enemiesP0 = {1,2};
+//    private int[] enemiesP1 = {0,3};
+//    private int[] enemiesP2 = {0,3};
+//    private int[] enemiesP3 = {1,2};
+//    
+//    private int[] enemies;
+//    
+//    private int allyP0 = 3;
+//    private int allyP1 = 2;
+//    private int allyP2 = 1;
+//    private int allyP3 = 0;
+//    
+//    private int ally;
     
-    private int[] enemiesP0 = {1,2};
-    private int[] enemiesP1 = {0,3};
-    private int[] enemiesP2 = {0,3};
-    private int[] enemiesP3 = {1,2};
+    private final int maxSimulations = 2000;
+    private final long Timeout = 900;
     
-    private int[] enemies;
+    private Random rand;
+    private boolean initialize = false;
     
-    private int allyP0 = 3;
-    private int allyP1 = 2;
-    private int allyP2 = 1;
-    private int allyP3 = 0;
-    
-    private int ally;*/
-    
-    private int maxSimulations = 200;
-    private long Timeout = 950;
-    
-    private Random rand = new Random();
+    static class theLock extends Object {
+    }
+    static private final theLock lockObject = new theLock();
 
     /**
      * Provide a default public constructor
      */
     public s260481943Player() {
-        super("260481943");
-        //destination = new Polygon();
+        this("260481943");
     }
 
     public s260481943Player(String s) {
         super(s);
-        //destination = new Polygon();
+        this.rand = new Random();
+        this.TR = new Point(0,15);
+        this.BL = new Point(15,0);
+        this.BR = new Point(15,15);
+        this.TL = new Point(0,0);
+
     }
 
     @Override
     public Board createBoard() { return new CCBoard(); }
 
     @Override
-    public Move chooseMove(Board theboard) 
-    {
-        
-        /*
-        // Run a check (once) as to where we are
-        if (!cornerCheckComplete) {
+    public Move chooseMove(Board theboard) {
+        final ResultList evaluations = new ResultList();
+        final long time = System.currentTimeMillis();
+        if (!initialize) {
             if (this.playerID == 0) {
-                destination = new Polygon(xCoord_BR, yCoord_BR, xCoord_BR.length);
-                ally = allyP0;
-                enemies = enemiesP0;
+                home = new Polygon(xCoord_TL, yCoord_TL, xCoord_TL.length);
+//                ally = allyP0;
+//                enemies = enemiesP0;
                 destinationPoint = BR;
-                destinationPointEnemy1 = TR;
-                destinationPointEnemy2 = BL;
+//                destinationPointEnemy1 = TR;
+//                destinationPointEnemy2 = BL;
             } else if (this.playerID == 1) {
-                destination = new Polygon(xCoord_TR, yCoord_TR, xCoord_TR.length);
-                ally = allyP1;
-                enemies = enemiesP1;
+                home = new Polygon(xCoord_BL, yCoord_BL, xCoord_BL.length);
+//                ally = allyP1;
+//                enemies = enemiesP1;
                 destinationPoint = TR;
-                destinationPointEnemy1 = BR;
-                destinationPointEnemy2 = TL;
+//                destinationPointEnemy1 = BR;
+//                destinationPointEnemy2 = TL;
             } else if (this.playerID == 2) {
-                destination = new Polygon(xCoord_BL, yCoord_BL, xCoord_BL.length);
-                ally = allyP2;
-                enemies = enemiesP2;
+                home = new Polygon(xCoord_TR, yCoord_TR, xCoord_TR.length);
+//                ally = allyP2;
+//                enemies = enemiesP2;
                 destinationPoint = BL;
-                destinationPointEnemy1 = BR;
-                destinationPointEnemy2 = TL;
+//                destinationPointEnemy1 = BR;
+//                destinationPointEnemy2 = TL;
             } else if (this.playerID == 3) {
-                destination = new Polygon(xCoord_TL, yCoord_TL, xCoord_TL.length);
-                ally = allyP3;
-                enemies = enemiesP3;
+                home = new Polygon(xCoord_BL, yCoord_BL, xCoord_BL.length);
+//                ally = allyP3;
+//                enemies = enemiesP3;
                 destinationPoint = TL;
-                destinationPointEnemy1 = TR;
-                destinationPointEnemy2 = BL;
+//                destinationPointEnemy1 = TR;
+//                destinationPointEnemy2 = BL;
             }
-            cornerCheckComplete = true;
-        }*/
+            initialize = true;
+        }
+        
+        final CCBoard board = (CCBoard) theboard;
+        final ArrayList<CCMove> moves = getMovesForThisPlayerOnly(board);
+        
+        class monteCarloThread implements Runnable{
 
-        // Cast the arguments to the objects we want to work with
-        CCBoard board = (CCBoard) theboard;
+            @Override
+            public void run() {
+                monteCarlo(board, evaluations, moves, time);
+            }
+            
+        };
+        
+        Thread thread1 = new Thread(new monteCarloThread());
+        Thread thread2 = new Thread(new monteCarloThread());
+        Thread thread3 = new Thread(new monteCarloThread());
+        Thread thread4 = new Thread(new monteCarloThread());
+        thread1.start();
+        thread2.start();
+        thread3.start();
+        thread4.run();
 
-        return monteCarlo(board);
+        return evaluations.getBest();
+        
     }
 
     private ArrayList<CCMove> getMovesForThisPlayerOnly(CCBoard board) {
@@ -133,39 +156,57 @@ public class s260481943Player extends Player {
         return ourMoves;
     }
     
-    private CCMove monteCarlo(CCBoard board) {
-        ResultList evaluations = new ResultList();
-        long time = System.currentTimeMillis();
+    private void monteCarlo(CCBoard board, ResultList evaluations, ArrayList<CCMove> legalMoves, long startTime) { 
         for (int i = 0; i < maxSimulations; i++) {
-            // Get legal moves
-            ArrayList<CCMove> legalMoves = getMovesForThisPlayerOnly(board);
-            // Chose random move
-            CCMove randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
-            
+
             CCBoard board2 = (CCBoard) board.clone();
+            CCMove randomMove = null;
+            // Chose random move
+            synchronized (lockObject) {
+                randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
+                while (!validateMove(randomMove)) {
+                    legalMoves.remove(randomMove);
+                    randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
+                }
+
+            }
+            
             board2.move(randomMove);
             
             // play out game until end
             while(board2.getWinner() == CCBoard.NOBODY) {
                 ArrayList<CCMove> moveList = board2.getLegalMoves();
-                CCMove randMoveAnyone = moveList.get(rand.nextInt(moveList.size()));
-                board2.move(randMoveAnyone);
+                board2.move(moveList.get(rand.nextInt(moveList.size())));
+            }
+            int eval = 0;
+            if (randomMove.isHop()) {
+                eval = 1;
+            }
+            if (randomMove.getFrom() != null && randomMove.getFrom().distance(destinationPoint) > 15) {
+                eval+=2;
             }
             // game over; we won
             if (board2.getWinner() == this.playerID) {
-                evaluations.addMove(randomMove, 1);
+                evaluations.addMove(randomMove, eval + 3);
             }
             // we lost
             else {
-                evaluations.addMove(randomMove, -1);
+                evaluations.addMove(randomMove, eval - 3);
             }
-            if (System.currentTimeMillis() - time > Timeout){
+            if (System.currentTimeMillis() - startTime > Timeout){
                 break;
             }
         }
-        return evaluations.getBest();
-
     }
+    
+    
+    private boolean validateMove(CCMove move) {
+        if (move.getFrom() == null || move.getTo() == null) {
+            return true;
+        } else return move.getFrom().distance(destinationPoint) > (move.getTo().distance(destinationPoint));
+    }
+
+
     /*
     private CCMove minimaxDecision(CCBoard board) {
 
@@ -251,4 +292,5 @@ public class s260481943Player extends Player {
             board.forceWinner(enemies[0]);
         }
     }*/
+
 }
