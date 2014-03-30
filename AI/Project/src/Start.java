@@ -1,13 +1,12 @@
 
 import boardgame.Client;
 import boardgame.Player;
-import halma.CCRandomPlayer;
 
 import s260481943.s260481943Player;
 
 /**
- *
- * @author michael
+ * Class responsible for creating 4 AI clients for a server.
+ * @author Michael Smith
  */
 public class Start {
 

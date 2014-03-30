@@ -6,132 +6,119 @@ import boardgame.Player;
 import halma.CCBoard;
 import halma.CCMove;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Minimax halma player.
- * 
+ * MonteCarlo-based Halma player. Uses a simplified version of the algorithm
+ * that does not use a tree or minimax but instead uses randomness to play out
+ * the game and get results for different moves. Implements a custom evaluation
+ * function to reduce the number of moves that need to be checked as well as
+ * determine their value.
+ *
+ * @author Michael Smith
+ *
  */
+public class s260481943Player extends Player {
 
-public class s260481943Player extends Player{
-
-    
-    private Polygon home;
+    // Destination corner
     private Point destinationPoint;
-//    private Point destinationPointEnemy1;
-//    private Point destinationPointEnemy2;
 
-    private int[] xCoord_BL = {0, 0, 1, 2, 3, 3};
-    private int[] yCoord_BL = {15, 12, 12, 13, 14, 15};
+    // The 4 corners of the game where players start
     private final Point BL;
-
-    private int[] xCoord_BR = {15, 12, 12, 13, 14, 15};
-    private int[] yCoord_BR = {15, 15, 14, 13, 12, 12};
     private final Point BR;
-
-    private int[] xCoord_TL = {0, 3, 3, 2, 1, 0};
-    private int[] yCoord_TL = {0, 0, 1, 2, 3, 3};
     private final Point TL;
-
-    private int[] xCoord_TR = {15, 15, 14, 13, 12, 12};
-    private int[] yCoord_TR = {0, 3, 3, 2, 1, 0};
     private final Point TR;
-    
-//    private int[] enemiesP0 = {1,2};
-//    private int[] enemiesP1 = {0,3};
-//    private int[] enemiesP2 = {0,3};
-//    private int[] enemiesP3 = {1,2};
-//    
-//    private int[] enemies;
-//    
-//    private int allyP0 = 3;
-//    private int allyP1 = 2;
-//    private int allyP2 = 1;
-//    private int allyP3 = 0;
-//    
-//    private int ally;
-    
+
+    // Montecarlo parameters: maximum number of simulations and
+    // approx. timeout in milliseconds if the maximum number of simulations
+    // can't be reached
     private final int maxSimulations = 2000;
     private final long Timeout = 900;
-    
+
+    // Random number generator
     private Random rand;
+    // Has the algorithm initialized needed data, such as destination
     private boolean initialize = false;
-    
+
+    // Mutex for multithreading
     static class theLock extends Object {
     }
     static private final theLock lockObject = new theLock();
 
     /**
-     * Provide a default public constructor
+     * Initializes the player with the default name 260481943.
      */
     public s260481943Player() {
         this("260481943");
     }
 
+    /**
+     * Initializes the player.
+     *
+     * @param s Name of player
+     */
     public s260481943Player(String s) {
         super(s);
         this.rand = new Random();
-        this.TR = new Point(0,15);
-        this.BL = new Point(15,0);
-        this.BR = new Point(15,15);
-        this.TL = new Point(0,0);
+        this.TR = new Point(0, 15);
+        this.BL = new Point(15, 0);
+        this.BR = new Point(15, 15);
+        this.TL = new Point(0, 0);
 
     }
 
     @Override
-    public Board createBoard() { return new CCBoard(); }
+    /**
+     * Create the game board.
+     */
+    public Board createBoard() {
+        return new CCBoard();
+    }
 
     @Override
+    /**
+     * Chooses the best move to make based on MonteCarlo within at most one
+     * second.
+     */
     public Move chooseMove(Board theboard) {
+        // Create a data structure to keep data from our MonteCarlo evaluations.
         final ResultList evaluations = new ResultList();
+        // Get the current time to ensure we don't exceed one second.
         final long time = System.currentTimeMillis();
+
+        // If this is the first time running, determine our destination corner.
+        // This cannot be done in the constructor since we don't know who
+        // we are at that point.
         if (!initialize) {
             if (this.playerID == 0) {
-                home = new Polygon(xCoord_TL, yCoord_TL, xCoord_TL.length);
-//                ally = allyP0;
-//                enemies = enemiesP0;
                 destinationPoint = BR;
-//                destinationPointEnemy1 = TR;
-//                destinationPointEnemy2 = BL;
             } else if (this.playerID == 1) {
-                home = new Polygon(xCoord_BL, yCoord_BL, xCoord_BL.length);
-//                ally = allyP1;
-//                enemies = enemiesP1;
                 destinationPoint = TR;
-//                destinationPointEnemy1 = BR;
-//                destinationPointEnemy2 = TL;
             } else if (this.playerID == 2) {
-                home = new Polygon(xCoord_TR, yCoord_TR, xCoord_TR.length);
-//                ally = allyP2;
-//                enemies = enemiesP2;
                 destinationPoint = BL;
-//                destinationPointEnemy1 = BR;
-//                destinationPointEnemy2 = TL;
             } else if (this.playerID == 3) {
-                home = new Polygon(xCoord_BL, yCoord_BL, xCoord_BL.length);
-//                ally = allyP3;
-//                enemies = enemiesP3;
                 destinationPoint = TL;
-//                destinationPointEnemy1 = TR;
-//                destinationPointEnemy2 = BL;
             }
             initialize = true;
         }
-        
+
+        // Cast the board to a datatype we can work with
         final CCBoard board = (CCBoard) theboard;
+        // Get the list of moves (only) we can make
         final ArrayList<CCMove> moves = getMovesForThisPlayerOnly(board);
-        
-        class monteCarloThread implements Runnable{
+
+        // Define the multithreaded algorithm
+        class monteCarloThread implements Runnable {
 
             @Override
             public void run() {
                 monteCarlo(board, evaluations, moves, time);
             }
-            
-        };
-        
+
+        }
+
+        // Start four MonteCarlo threads
         Thread thread1 = new Thread(new monteCarloThread());
         Thread thread2 = new Thread(new monteCarloThread());
         Thread thread3 = new Thread(new monteCarloThread());
@@ -139,14 +126,131 @@ public class s260481943Player extends Player{
         thread1.start();
         thread2.start();
         thread3.start();
+        // The last thread blocks until its done
+        // Otherwise, we risk returning a result before the algorithms have completed
+        // Note that at this point some of the other threads may still be running
+        // but they will at least have nearly finished so its not an issue
         thread4.run();
 
         return evaluations.getBest();
-        
+
     }
 
+    /**
+     * Simplified MonteCarlo algorithm implementation. Uses randomness to play
+     * out the game and get results for different moves instead of a minimax
+     * tree with MonteCarlo at the end. Implements a custom evaluation function
+     * to reduce the number of moves that need to be checked as well as
+     * determine their value.
+     *
+     * @param board The game board.
+     * @param evaluations Data structure where results are stored.
+     * @param legalMoves List of legal moves for the <b>current player</b>. Note
+     * that bad moves are removed.
+     * @param startTime Time to use (in milliseconds) as the start of the
+     * timeout.
+     */
+    private void monteCarlo(CCBoard board, ResultList evaluations, ArrayList<CCMove> legalMoves, long startTime) {
+
+        // Execute a maximum number of simulations
+        for (int i = 0; i < maxSimulations; i++) {
+
+            // Clone the board so we can work on it
+            CCBoard board2 = (CCBoard) board.clone();
+            CCMove randomMove = null;
+
+            // Chose random move, but make sure only one thread is 
+            // using the legalMoves ArrayList at once
+            synchronized (lockObject) {
+                // Get a move
+                randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
+                // Check if its valid (i.e. not going backwards)
+                while (!validateMove(randomMove)) {
+                    // If its invalid, try another and remove the bad one
+                    // so we don't try it again
+                    // Since this list is used across threads, the changes are
+                    // propagated to all, saving time
+                    legalMoves.remove(randomMove);
+                    randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
+                }
+
+            }
+            // Execute the random move chosen above
+            board2.move(randomMove);
+
+            // Play out the game until it finsihes with random moves for 
+            // everyone except ourselves
+            while (board2.getWinner() == CCBoard.NOBODY) {
+                // Get possible moves
+                ArrayList<CCMove> moveList = board2.getLegalMoves();
+                // Get a random move
+                CCMove randomMove2 = moveList.get(rand.nextInt(moveList.size()));
+                // If it is our turn, make sure the random move is valid - that
+                // is, something we might actually pick
+                if (board2.getTurn() == this.playerID) {
+                    while (!validateMove(randomMove2)) {
+                        randomMove2 = moveList.get(rand.nextInt(moveList.size()));
+                    }
+                }
+                board2.move(moveList.get(rand.nextInt(moveList.size())));
+            }
+
+            // Custom evaluation function:
+            // (at this point the game is over)
+            // |     Initial Move     |  Score |
+            // _________________________________
+            // |         Hop          |   +2   |
+            // |  Piece in our corner |   +2   |
+            // |     Victory          |   +3   |
+            // |     Loss             |   -4   |
+            // _________________________________
+            int eval = 0;
+            // Hop
+            if (randomMove.isHop()) {
+                eval = 2;
+            }
+            // In starting corner
+            if (randomMove.getFrom() != null && randomMove.getFrom().distance(destinationPoint) > 15) {
+                eval += 2;
+            }
+            // Victory
+            if (board2.getWinner() == this.playerID) {
+                evaluations.addMove(randomMove, eval + 3);
+            } // Loss
+            else {
+                evaluations.addMove(randomMove, eval - 4);
+            }
+            // Timeout (stop any further simulations) if necessary
+            if (System.currentTimeMillis() - startTime > Timeout) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Checks whether a move is valid. Moves are valid if they are for the
+     * current player and reduce the distance to the goal (as opposed to
+     * increasing it).
+     *
+     * @param move The move to check
+     * @return Whether the move is valid or not.
+     */
+    private boolean validateMove(CCMove move) {
+        if (move.getFrom() == null || move.getTo() == null) {
+            return true;
+        } else {
+            return move.getFrom().distance(destinationPoint) > (move.getTo().distance(destinationPoint));
+        }
+    }
+
+    /**
+     * Gives possible legal moves for the board but reduced to the set of the
+     * current player.
+     *
+     * @param board The game board
+     * @return Legal moves for the current player
+     */
     private ArrayList<CCMove> getMovesForThisPlayerOnly(CCBoard board) {
-        // Make list of moves that are for us ONLY from list of legal moves
         ArrayList<CCMove> ourMoves = new ArrayList<>();
         for (CCMove entry : board.getLegalMoves()) {
             if (entry.getPlayerID() == this.playerID) {
@@ -155,142 +259,5 @@ public class s260481943Player extends Player{
         }
         return ourMoves;
     }
-    
-    private void monteCarlo(CCBoard board, ResultList evaluations, ArrayList<CCMove> legalMoves, long startTime) { 
-        for (int i = 0; i < maxSimulations; i++) {
-
-            CCBoard board2 = (CCBoard) board.clone();
-            CCMove randomMove = null;
-            // Chose random move
-            synchronized (lockObject) {
-                randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
-                while (!validateMove(randomMove)) {
-                    legalMoves.remove(randomMove);
-                    randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
-                }
-
-            }
-            
-            board2.move(randomMove);
-            
-            // play out game until end
-            while(board2.getWinner() == CCBoard.NOBODY) {
-                ArrayList<CCMove> moveList = board2.getLegalMoves();
-                board2.move(moveList.get(rand.nextInt(moveList.size())));
-            }
-            int eval = 0;
-            if (randomMove.isHop()) {
-                eval = 2;
-            }
-            if (randomMove.getFrom() != null && randomMove.getFrom().distance(destinationPoint) > 15) {
-                eval+=2;
-            }
-            // game over; we won
-            if (board2.getWinner() == this.playerID) {
-                evaluations.addMove(randomMove, eval + 3);
-            }
-            // we lost
-            else {
-                evaluations.addMove(randomMove, eval - 4);
-            }
-            if (System.currentTimeMillis() - startTime > Timeout){
-                break;
-            }
-        }
-    }
-    
-    
-    private boolean validateMove(CCMove move) {
-        if (move.getFrom() == null || move.getTo() == null) {
-            return true;
-        } else return move.getFrom().distance(destinationPoint) > (move.getTo().distance(destinationPoint));
-    }
-
-
-    /*
-    private CCMove minimaxDecision(CCBoard board) {
-
-        evalList listOfValues = new evalList();
-        ArrayList<CCMove> ourMoves = getMovesForThisPlayerOnly(board);
-
-        for (CCMove move : ourMoves) {
-            CCBoard board2 = (CCBoard)board.clone();
-            board2.move(move);
-            listOfValues.addMove(minimaxValue(board2), move);
-        }
-        return listOfValues.getBestMove();
-    }
-    
-    private double minimaxValue(CCBoard board) {
-        // if terminal, return utility
-        if (isTerminal(board)) {
-            // Give 1 for win, -1 for loss
-            if (board.getWinner() == this.playerID) {
-                return 1;
-            }
-            else if (board.getWinner() == CCBoard.DRAW) {
-                return 0;
-            }
-            return -1;
-        }
-        //for each state s' in successors
-        evalList listOfValues = new evalList();
-        for (CCMove move : board.getLegalMoves()) {
-            CCBoard board2 = (CCBoard)board.clone();
-            board2.move(move);
-            listOfValues.addMove(minimaxValue(board2), move);
-        }
-        // For player, max turn
-        if (board.getTurn() == this.playerID || board.getTurn() == ally) {
-            return listOfValues.getBestEval();
-        }
-
-        // Not us or ally : enemy
-        return listOfValues.getWorstEval();
-        
-    }
-
-
-    private boolean isTerminal(CCBoard board) {
-        if (board.getTurnsPlayed() > maxTurns) {
-            // max turns hit; run a partial evaluation now to declare the winner
-            evalPartialBoard(board);
-            return true;
-        } else {
-            return board.getWinner() != CCBoard.NOBODY;
-        }
-    }
-
-    
-    private void evalPartialBoard(CCBoard board) {
-        // Find winner of a partial board by finding distances of player pieces to dest
-        ArrayList<Point> ourPieces = board.getPieces(this.playerID);
-        ArrayList<Point> piecesEnemy1 = board.getPieces(enemies[0]);
-        ArrayList<Point> piecesEnemy2 = board.getPieces(enemies[1]);
-        
-        int ourDist = 0;
-        for (Point piece : ourPieces) {
-            ourDist += piece.distance(destinationPoint);
-        }
-        
-        int enemy1Dist = 0;
-        for (Point piece : piecesEnemy1) {
-            enemy1Dist += piece.distance(destinationPointEnemy1);
-        }
-        
-        int enemy2Dist = 0;
-        for (Point piece : piecesEnemy2) {
-            enemy2Dist += piece.distance(destinationPointEnemy2);
-        }
-
-        // min distance to dest is us : good (count as win)
-        if (Math.min(Math.min(ourDist, enemy1Dist), enemy2Dist) == ourDist) {
-            board.forceWinner(this.playerID);
-        } else {
-            // Not us: loss
-            // Note: force winner to enemy 1, but it doesn't really matter who
-            board.forceWinner(enemies[0]);
-        }
-    }*/
 
 }
