@@ -33,18 +33,15 @@ public class s260481943Player extends Player {
     // Montecarlo parameters: maximum number of simulations and
     // approx. timeout in milliseconds if the maximum number of simulations
     // can't be reached
-    private final int maxSimulations = 2000;
-    private final long Timeout = 900;
+    private final int maxSimulations = 10000;
+    private final long Timeout = 970;
 
     // Random number generator
     private Random rand;
     // Has the algorithm initialized needed data, such as destination
     private boolean initialize = false;
 
-    // Mutex for multithreading
-    static class theLock extends Object {
-    }
-    static private final theLock lockObject = new theLock();
+    private CCMove lastmove;
 
     /**
      * Initializes the player with the default name 260481943.
@@ -65,6 +62,7 @@ public class s260481943Player extends Player {
         this.BL = new Point(15, 0);
         this.BR = new Point(15, 15);
         this.TL = new Point(0, 0);
+        this.lastmove = new CCMove(0, new Point(0,0), new Point(15,15));
 
     }
 
@@ -104,35 +102,19 @@ public class s260481943Player extends Player {
         }
 
         // Cast the board to a datatype we can work with
-        final CCBoard board = (CCBoard) theboard;
+        CCBoard board = (CCBoard) theboard;
         // Get the list of moves (only) we can make
-        final ArrayList<CCMove> moves = getMovesForThisPlayerOnly(board);
+        ArrayList<CCMove> moves = getMovesForThisPlayerOnly(board);
 
-        // Define the multithreaded algorithm
-        class monteCarloThread implements Runnable {
-
-            @Override
-            public void run() {
-                monteCarlo(board, evaluations, moves, time);
-            }
-
-        }
-
+        monteCarlo(board, evaluations, moves, time);
         // Start four MonteCarlo threads
-        Thread thread1 = new Thread(new monteCarloThread());
-        Thread thread2 = new Thread(new monteCarloThread());
-        Thread thread3 = new Thread(new monteCarloThread());
-        Thread thread4 = new Thread(new monteCarloThread());
-        thread1.start();
-        thread2.start();
-        thread3.start();
         // The last thread blocks until its done
         // Otherwise, we risk returning a result before the algorithms have completed
         // Note that at this point some of the other threads may still be running
         // but they will at least have nearly finished so its not an issue
-        thread4.run();
-
-        return evaluations.getBest();
+        CCMove move = evaluations.getBest();
+        this.lastmove = move;
+        return move;
 
     }
 
@@ -159,22 +141,15 @@ public class s260481943Player extends Player {
             CCBoard board2 = (CCBoard) board.clone();
             CCMove randomMove = null;
 
-            // Chose random move, but make sure only one thread is 
-            // using the legalMoves ArrayList at once
-            synchronized (lockObject) {
-                // Get a move
+            // Chose random move
+            // Get a move
+            randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
+            // Check if its valid (i.e. not going backwards)
+            while (!validateMove(randomMove)) {
+                // If its invalid, try another
                 randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
-                // Check if its valid (i.e. not going backwards)
-                while (!validateMove(randomMove)) {
-                    // If its invalid, try another and remove the bad one
-                    // so we don't try it again
-                    // Since this list is used across threads, the changes are
-                    // propagated to all, saving time
-                    legalMoves.remove(randomMove);
-                    randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
-                }
-
             }
+
             // Execute the random move chosen above
             board2.move(randomMove);
 
@@ -207,7 +182,7 @@ public class s260481943Player extends Player {
             int eval = 0;
             // Hop
             if (randomMove.isHop()) {
-                eval = 2;
+                eval = 3;
             }
             // In starting corner
             if (randomMove.getFrom() != null && randomMove.getFrom().distance(destinationPoint) > 15) {
@@ -215,13 +190,14 @@ public class s260481943Player extends Player {
             }
             // Victory
             if (board2.getWinner() == this.playerID) {
-                evaluations.addMove(randomMove, eval + 3);
+                evaluations.addMove(randomMove, eval + 6);
             } // Loss
             else {
-                evaluations.addMove(randomMove, eval - 4);
+                evaluations.addMove(randomMove, eval - 6);
             }
             // Timeout (stop any further simulations) if necessary
             if (System.currentTimeMillis() - startTime > Timeout) {
+                System.out.printf("Iterations: %d\n", i);
                 break;
             }
         }
@@ -238,8 +214,12 @@ public class s260481943Player extends Player {
     private boolean validateMove(CCMove move) {
         if (move.getFrom() == null || move.getTo() == null) {
             return true;
-        } else {
-            return move.getFrom().distance(destinationPoint) > (move.getTo().distance(destinationPoint));
+        } 
+        else if (move.getTo().equals(this.lastmove.getFrom())) {
+            return false;
+        }
+        else {
+            return move.getFrom().distance(destinationPoint) >= (move.getTo().distance(destinationPoint));
         }
     }
 
@@ -251,7 +231,7 @@ public class s260481943Player extends Player {
      * @return Legal moves for the current player
      */
     private ArrayList<CCMove> getMovesForThisPlayerOnly(CCBoard board) {
-        ArrayList<CCMove> ourMoves = new ArrayList<>();
+        ArrayList<CCMove> ourMoves = new ArrayList<>(150);
         for (CCMove entry : board.getLegalMoves()) {
             if (entry.getPlayerID() == this.playerID) {
                 ourMoves.add(entry);
