@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 
-java -cp ./lib/Project/projectsrc.jar boardgame.Server -p 8123 -t 1000 -b halma.CCBoard -q
+java -cp ./lib/Project/projectsrc.jar boardgame.Server -p 8123 -t 2000 -b halma.CCBoard -q

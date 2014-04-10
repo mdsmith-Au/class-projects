@@ -7,6 +7,7 @@ import halma.CCBoard;
 import halma.CCMove;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 /**
@@ -22,7 +23,7 @@ import java.util.Random;
 public class s260481943Player extends Player {
 
     // Destination corner
-    private Point destinationPoint;
+    private Point destinationPoint[];
 
     // The 4 corners of the game where players start
     private final Point BL;
@@ -34,14 +35,11 @@ public class s260481943Player extends Player {
     // approx. timeout in milliseconds if the maximum number of simulations
     // can't be reached
     private final int maxSimulations = 10000;
-    private final long Timeout = 970;
+    private final long Timeout = 900;
 
     // Random number generator
     private Random rand;
-    // Has the algorithm initialized needed data, such as destination
-    private boolean initialize = false;
 
-    private CCMove lastmove;
 
     /**
      * Initializes the player with the default name 260481943.
@@ -62,7 +60,7 @@ public class s260481943Player extends Player {
         this.BL = new Point(15, 0);
         this.BR = new Point(15, 15);
         this.TL = new Point(0, 0);
-        this.lastmove = new CCMove(0, new Point(0,0), new Point(15,15));
+        this.destinationPoint = new Point[] {this.BR, this.TR, this.BL, this.TL};
 
     }
 
@@ -80,32 +78,21 @@ public class s260481943Player extends Player {
      * second.
      */
     public Move chooseMove(Board theboard) {
+        final long time = System.currentTimeMillis();
         // Create a data structure to keep data from our MonteCarlo evaluations.
         final ResultList evaluations = new ResultList();
         // Get the current time to ensure we don't exceed one second.
-        final long time = System.currentTimeMillis();
-
-        // If this is the first time running, determine our destination corner.
-        // This cannot be done in the constructor since we don't know who
-        // we are at that point.
-        if (!initialize) {
-            if (this.playerID == 0) {
-                destinationPoint = BR;
-            } else if (this.playerID == 1) {
-                destinationPoint = TR;
-            } else if (this.playerID == 2) {
-                destinationPoint = BL;
-            } else if (this.playerID == 3) {
-                destinationPoint = TL;
-            }
-            initialize = true;
-        }
-
+        
         // Cast the board to a datatype we can work with
         CCBoard board = (CCBoard) theboard;
         // Get the list of moves (only) we can make
-        ArrayList<CCMove> moves = getMovesForThisPlayerOnly(board);
+        ArrayList<CCMove> moves = board.getLegalMoves();
 
+//        for (CCMove move: board.getLegalMoves()) {
+//            System.out.println("Possib. Move: " + move.toPrettyString());
+//            
+//        }
+        System.out.println("Turns: " + board.getTurnsPlayed());
         monteCarlo(board, evaluations, moves, time);
         // Start four MonteCarlo threads
         // The last thread blocks until its done
@@ -113,7 +100,6 @@ public class s260481943Player extends Player {
         // Note that at this point some of the other threads may still be running
         // but they will at least have nearly finished so its not an issue
         CCMove move = evaluations.getBest();
-        this.lastmove = move;
         return move;
 
     }
@@ -127,8 +113,7 @@ public class s260481943Player extends Player {
      *
      * @param board The game board.
      * @param evaluations Data structure where results are stored.
-     * @param legalMoves List of legal moves for the <b>current player</b>. Note
-     * that bad moves are removed.
+     * @param legalMoves List of legal moves for the current player.
      * @param startTime Time to use (in milliseconds) as the start of the
      * timeout.
      */
@@ -144,11 +129,6 @@ public class s260481943Player extends Player {
             // Chose random move
             // Get a move
             randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
-            // Check if its valid (i.e. not going backwards)
-            while (!validateMove(randomMove)) {
-                // If its invalid, try another
-                randomMove = legalMoves.get(rand.nextInt(legalMoves.size()));
-            }
 
             // Execute the random move chosen above
             board2.move(randomMove);
@@ -160,13 +140,6 @@ public class s260481943Player extends Player {
                 ArrayList<CCMove> moveList = board2.getLegalMoves();
                 // Get a random move
                 CCMove randomMove2 = moveList.get(rand.nextInt(moveList.size()));
-                // If it is our turn, make sure the random move is valid - that
-                // is, something we might actually pick
-                if (board2.getTurn() == this.playerID) {
-                    while (!validateMove(randomMove2)) {
-                        randomMove2 = moveList.get(rand.nextInt(moveList.size()));
-                    }
-                }
                 board2.move(moveList.get(rand.nextInt(moveList.size())));
             }
 
@@ -180,24 +153,39 @@ public class s260481943Player extends Player {
             // |     Loss             |   -4   |
             // _________________________________
             int eval = 0;
-            // Hop
-            if (randomMove.isHop()) {
-                eval = 3;
+//            // Victory
+//            if (board2.getWinner() == this.playerID) {
+//                if (randomMove.isHop()) {
+//                    eval += 2;
+//                }
+//                if (randomMove.getFrom() != null && randomMove.getFrom().distance(destinationPoint[this.playerID]) > 10) {
+//                    eval += 2;
+//                }
+//                evaluations.addMove(randomMove, eval + 5);
+//            } // Loss
+//            else {
+//                evaluations.addMove(randomMove, eval - 7);
+//            }
+            HashSet<Point> basePoint = CCBoard.bases[randomMove.getPlayerID()];
+//            if (basePoint.contains(randomMove.getTo()) && !basePoint.contains(randomMove.getFrom())){
+//                eval--;
+//            }
+            if (basePoint.contains(randomMove.getFrom()) && !basePoint.contains(randomMove.getTo())) {
+                eval++;
             }
-            // In starting corner
-            if (randomMove.getFrom() != null && randomMove.getFrom().distance(destinationPoint) > 15) {
-                eval += 2;
-            }
-            // Victory
             if (board2.getWinner() == this.playerID) {
-                evaluations.addMove(randomMove, eval + 6);
-            } // Loss
+                Point destination = destinationPoint[randomMove.getPlayerID()];
+                
+                if (randomMove.getFrom().distance(destination) > (randomMove.getTo().distance(destination) - 0.5)) {
+                    eval++;
+                }
+                evaluations.addMove(randomMove, eval + 1);
+            }
             else {
-                evaluations.addMove(randomMove, eval - 6);
+                evaluations.addMove(randomMove, eval -1);
             }
             // Timeout (stop any further simulations) if necessary
-            if (System.currentTimeMillis() - startTime > Timeout) {
-                System.out.printf("Iterations: %d\n", i);
+            if (System.currentTimeMillis() - startTime >= Timeout) {
                 break;
             }
         }
@@ -211,33 +199,21 @@ public class s260481943Player extends Player {
      * @param move The move to check
      * @return Whether the move is valid or not.
      */
-    private boolean validateMove(CCMove move) {
-        if (move.getFrom() == null || move.getTo() == null) {
-            return true;
-        } 
-        else if (move.getTo().equals(this.lastmove.getFrom())) {
-            return false;
-        }
-        else {
-            return move.getFrom().distance(destinationPoint) >= (move.getTo().distance(destinationPoint));
-        }
+    private boolean validateMoveDir(CCMove move) {
+        return true;
+//        if (move.getFrom() == null || move.getTo() == null) {
+//            return true;
+//        }
+//        else {
+//            Point destination = destinationPoint[move.getPlayerID()];
+//            return move.getFrom().distance(destination) > (move.getTo().distance(destination) - 0.5);
+//        }
     }
-
-    /**
-     * Gives possible legal moves for the board but reduced to the set of the
-     * current player.
-     *
-     * @param board The game board
-     * @return Legal moves for the current player
-     */
-    private ArrayList<CCMove> getMovesForThisPlayerOnly(CCBoard board) {
-        ArrayList<CCMove> ourMoves = new ArrayList<>(150);
-        for (CCMove entry : board.getLegalMoves()) {
-            if (entry.getPlayerID() == this.playerID) {
-                ourMoves.add(entry);
-            }
-        }
-        return ourMoves;
+    
+    private boolean validateMove(CCMove move) {
+//        HashSet<Point> basePoint = CCBoard.bases[move.getPlayerID()];
+//        return !(basePoint.contains(move.getTo()) && !basePoint.contains(move.getFrom()));
+        return true;
     }
 
 }

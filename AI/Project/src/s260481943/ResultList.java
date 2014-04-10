@@ -59,6 +59,7 @@ public class ResultList {
         for (Map.Entry<CCMove, int[]> map : set) {
             int[] data = map.getValue();
             int value = data[0] / data[1];
+            //System.out.printf("Raw value: %d\n", data[0]);
             if (value > maxValue) {
                 // This value is better; we have a new best move
                 maxValue = value;
