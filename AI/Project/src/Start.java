@@ -1,5 +1,6 @@
 
 import boardgame.Client;
+import halma.CCRandomPlayer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import s260481943.s260481943Player;
@@ -24,26 +25,30 @@ public class Start {
 //        });
 //        
 //        System.setOut(dummyStream);
-        new Thread(new Client(new s260481943Player("Enemy 1"), "localhost", 8123)).start();
+//        new Thread(new Client(new s260481943Player("Michael 1"), "michael-server", 8123)).start();
+//
+//        new Thread(new Client(new s260481943Player("Michael 2"), "michael-server", 8123)).start();
+        new Thread(new Client(new s260481943Player("Michael 1"), "localhost", 8123)).start();
 
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
             Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
         }
-        new Thread(new Client(new s260481943Player("Michael"), "localhost", 8123)).start();
+        new Thread(new Client(new CCRandomPlayer("Rand 1"), "localhost", 8123)).start();
+
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
             Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
         }
-        new Thread(new Client(new s260481943Player("Ally 1"), "localhost", 8123)).start();
+        new Thread(new Client(new CCRandomPlayer("Rand 2"), "localhost", 8123)).start();
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
             Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
         }
-        new Thread(new Client(new s260481943Player("Enemy 2"), "localhost", 8123)).start();
+        new Thread(new Client(new s260481943Player("Michael 2"), "localhost", 8123)).start();
 
     }
 }

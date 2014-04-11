@@ -21,8 +21,7 @@ public class s260481943Player extends Player {
     private final Point TL;
     private final Point TR;
 
-    // Random number generator
-    private Random rand;
+    private CCMove lastMove;
 
     /**
      * Initializes the player with the default name 260481943.
@@ -38,13 +37,12 @@ public class s260481943Player extends Player {
      */
     public s260481943Player(String s) {
         super(s);
-        this.rand = new Random();
         this.TR = new Point(0, 15);
         this.BL = new Point(15, 0);
         this.BR = new Point(15, 15);
         this.TL = new Point(0, 0);
         this.destinationPoint = new Point[]{this.BR, this.TR, this.BL, this.TL};
-
+        this.lastMove = new CCMove(0,new Point(0,0), new Point(0,0));
     }
 
     @Override
@@ -66,7 +64,9 @@ public class s260481943Player extends Player {
         // Get the list of moves we can make
 
         System.out.println("# turns: " + board.getTurnsPlayed());
-        return getBestMove(board);
+        CCMove bestMove = getBestMove(board);
+        lastMove = bestMove;
+        return bestMove;
 
     }
 
@@ -89,6 +89,11 @@ public class s260481943Player extends Player {
             // This will give points to moves that go forward and penalize
             // those that go backward
             score += (move.getFrom().distance(destinationPoint[move.getPlayerID()]) - move.getTo().distance(destinationPoint[move.getPlayerID()]));
+            //  Penalize moves that undo the last move
+            if (move.getTo().equals(lastMove.getFrom())) {
+                score -= 2;
+            }
+
             // If moves *do* move forward...
             if (move.getFrom().distance(destinationPoint[move.getPlayerID()]) > move.getTo().distance(destinationPoint[move.getPlayerID()])) {
                 // Add score if its a hop.  The code above will take care of
