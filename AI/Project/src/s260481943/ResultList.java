@@ -13,7 +13,7 @@ import java.util.Set;
 public class ResultList {
 
     // Hashmap acts as storage
-    private final HashMap<CCMove, int[]> storage;
+    private final HashMap<CCMove, Integer> storage;
 
     /**
      * Constructor creates the list
@@ -31,16 +31,14 @@ public class ResultList {
      */
     public void addMove(CCMove move, int status) {
 
-        int[] data = storage.get(move);
+        Integer data = storage.get(move);
 
         // Item already exists, modify entry
         if (data != null) {
-            data[0] = data[0] + status;
-            data[1] = data[1]++;
-            storage.put(move, data);
+            storage.put(move, data + status);
         } // New entry
         else {
-            storage.put(move, new int[]{status, 1});
+            storage.put(move, (Integer)status);
         }
     }
 
@@ -54,12 +52,10 @@ public class ResultList {
         CCMove bestMove = null;
 
         // Get the hashmap as a set so we can work with it
-        Set<Map.Entry<CCMove, int[]>> set = storage.entrySet();
+        Set<Map.Entry<CCMove, Integer>> set = storage.entrySet();
         // Check the value of each entry and compare to the max. so far
-        for (Map.Entry<CCMove, int[]> map : set) {
-            int[] data = map.getValue();
-            int value = data[0] / data[1];
-            //System.out.printf("Raw value: %d\n", data[0]);
+        for (Map.Entry<CCMove, Integer> map : set) {
+            int value = map.getValue();
             if (value > maxValue) {
                 // This value is better; we have a new best move
                 maxValue = value;
