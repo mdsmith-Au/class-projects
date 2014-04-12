@@ -28,27 +28,27 @@ public class Start {
 //        new Thread(new Client(new s260481943Player("Michael 1"), "michael-server", 8123)).start();
 //
 //        new Thread(new Client(new s260481943Player("Michael 2"), "michael-server", 8123)).start();
-        new Thread(new Client(new s260481943Player("Michael 1"), "localhost", 8123)).start();
+        new Thread(new Client(new s260481943Player("Michael 1"), "192.168.0.199", 8123)).start();
 
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        new Thread(new Client(new CCRandomPlayer("Rand 1"), "localhost", 8123)).start();
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        new Thread(new Client(new CCRandomPlayer("Rand 2"), "localhost", 8123)).start();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        new Thread(new Client(new s260481943Player("Michael 2"), "localhost", 8123)).start();
+//        try {
+//            Thread.sleep(500);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        new Thread(new Client(new CCRandomPlayer("Rand 1"), "localhost", 8123)).start();
+//
+//        try {
+//            Thread.sleep(500);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        new Thread(new Client(new CCRandomPlayer("Rand 2"), "localhost", 8123)).start();
+//        try {
+//            Thread.sleep(500);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        new Thread(new Client(new s260481943Player("Michael 2"), "192.168.0.199", 8123)).start();
 
     }
 }

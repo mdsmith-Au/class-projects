@@ -7,8 +7,6 @@ import halma.CCBoard;
 import halma.CCMove;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
 
 public class s260481943Player extends Player {
 
@@ -21,6 +19,7 @@ public class s260481943Player extends Player {
     private final Point TL;
     private final Point TR;
 
+    // Last played move
     private CCMove lastMove;
 
     /**
@@ -55,35 +54,46 @@ public class s260481943Player extends Player {
 
     @Override
     /**
-     * Chooses the best move to make based on MonteCarlo within at most one
-     * second.
+     * Chooses the best move to make based on a Best-First search.
      */
     public Move chooseMove(Board theboard) {
 
+        // Cast the board to correct type
         CCBoard board = (CCBoard) theboard;
-        // Get the list of moves we can make
 
-        System.out.println("# turns: " + board.getTurnsPlayed());
         CCMove bestMove = getBestMove(board);
         lastMove = bestMove;
         return bestMove;
 
     }
 
+    /**
+     * Returns the best possible move for the board state.  Based on
+     * a Best-First Search algorithm with a custom heuristic.
+     * @param board The game board.
+     * @return The best move to take.
+     */
     private CCMove getBestMove(CCBoard board) {
+        // Init data structure, get legal moves
         ResultList evaluations = new ResultList();
         ArrayList<CCMove> moves = board.getLegalMoves();
 
-        // Look at all possible moves
+        // Look at all possible moves, evaluate them, keep track of their scores
         for (CCMove move : moves) {
             evaluations.addMove(move, scoreMove(move));
         }
         return evaluations.getBest();
     }
 
+    /**
+     * The heuristic for Best-First search.  Evaluates primarily based on distance
+     * but also includes parameters such as whether or not the move is a hop.
+     * @param move The move to consider.
+     * @return A score for the move in question.
+     */
     private int scoreMove(CCMove move) {
         int score = 0;
-        // Evaluate only if move is not end turn
+        // Evaluate only if move is not end turn (if it is, the evaluation is 0)
         if (move.getTo() != null) {
             // Add a score based on the distance reduction a move acheives
             // This will give points to moves that go forward and penalize
