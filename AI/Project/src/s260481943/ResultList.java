@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Responsible for storing moves and their result from MonteCarlo.
+ * Responsible for storing moves and their results from an AI algorithm
  *
  * @author Michael Smith
  */
@@ -24,7 +24,7 @@ public class ResultList {
 
     /**
      * Add a move to the list with its corresponding value. If the move already
-     * exists, the value will be added to the existing entry.
+     * exists, the value will be added to that of the existing entry.
      *
      * @param move The move to be added or modified.
      * @param status The value associated with the given move.
