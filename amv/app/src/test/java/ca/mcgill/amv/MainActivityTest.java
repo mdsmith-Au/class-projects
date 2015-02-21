@@ -6,12 +6,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class MainActivityTest {
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
     @Test
     public void testOneValueForAddition() {
         double[] result = MainActivity.vectorAddition(new double[] {1.0, 2.0}, new double[] {0.0, 0.0}, new double[] {0.0, 0.0});
@@ -104,7 +98,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void testVectorAdditionForOneCartesianValue() {
+     public void testVectorAdditionForOneCartesianValue() {
         MainActivity.setCartesianMode();
         MainActivity.setAdditionMode();
         String result = MainActivity.calculate("1.0", "2.0", "", "", "", "");
@@ -149,5 +143,22 @@ public class MainActivityTest {
         String result = MainActivity.calculate("-1.0", "2.0", "3.0", "7.5", "", "");
 
         assertEquals("-13.5", result);
+    }
+
+    @Test
+    public void testConvertCartesianToPolarCoordinates() {
+        double[] result = MainActivity.convertCartesianToPolarCoordinates(new double[] {-5.0, 5.0});
+
+        assertEquals(7.071, result[0], 0.01);
+        assertEquals(135, result[1], 0.1);
+    }
+
+    @Test
+    public void testVectorAdditionForOnePolarValue() {
+        MainActivity.setPolarMode();
+        MainActivity.setAdditionMode();
+        String result = MainActivity.calculate("5.0", "60.0", "", "", "", "");
+
+        assertEquals("5.0∠60.0°", result);
     }
 }

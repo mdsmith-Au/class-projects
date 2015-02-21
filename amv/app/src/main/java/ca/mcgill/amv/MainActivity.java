@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -44,6 +45,16 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void setCoordinatesMode(View view) {
+        CheckBox coordMode = (CheckBox) findViewById(R.id.polarCoordinateCheckBox);
+
+        if(coordMode.isChecked()) {
+            setPolarMode();
+        } else {
+            setCartesianMode();
+        }
+    }
+
     public void setVectorAddition(View view) {
         EditText vecOneX = (EditText) findViewById(R.id.text_vector_1_x);
         EditText vecOneY = (EditText) findViewById(R.id.text_vector_1_y);
@@ -74,7 +85,7 @@ public class MainActivity extends ActionBarActivity {
         vectorTwoTextView.setVisibility(View.VISIBLE);
         vectorThreeTextView.setVisibility(View.VISIBLE);
         results.setVisibility(View.VISIBLE);
-        results.setText("");
+        results.setText("∠");
 
         setAdditionMode();
     }
@@ -192,6 +203,15 @@ public class MainActivity extends ActionBarActivity {
         return results;
     }
 
+    public static double[] convertCartesianToPolarCoordinates(double[] cartesianCoord) {
+        double[] results = new double[2];
+
+        results[0] = Math.sqrt((cartesianCoord[0] * cartesianCoord[0]) + (cartesianCoord[1] * cartesianCoord[1]));
+        results[1] = Math.toDegrees(Math.atan2(cartesianCoord[1], cartesianCoord[0]));
+
+        return results;
+    }
+
     public static void setAdditionMode() {
         isAdditionMode = true;
         isScalarProductMode = false;
@@ -247,6 +267,29 @@ public class MainActivity extends ActionBarActivity {
                 double[] vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
 
                 return Double.toString(crossVectorProduct(vec1, vec2));
+            }
+        } else {
+            if(isAdditionMode) {
+                double[] vec1 = new double[]{0.0, 0.0};
+                double[] vec2 = new double[]{0.0, 0.0};
+                double[] vec3 = new double[]{0.0, 0.0};
+
+                if (!vec1X.isEmpty() && !vec1Y.isEmpty()) {
+                    vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
+                    vec1 = convertPolarToCartesianCoordinates(vec1);
+                }
+                if (!vec2X.isEmpty() && !vec2Y.isEmpty()) {
+                    vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+                    vec2 = convertPolarToCartesianCoordinates(vec2);
+                }
+                if (!vec3X.isEmpty() && !vec3Y.isEmpty()) {
+                    vec3 = new double[]{Double.parseDouble(vec3X), Double.parseDouble(vec3Y)};
+                    vec3 = convertPolarToCartesianCoordinates(vec3);
+                }
+
+                double[] result = vectorAddition(vec1, vec2, vec3);
+                result = convertCartesianToPolarCoordinates(result);
+                return result[0] + "∠" + String.format("%.1f", result[1]) + "°";
             }
         }
 
