@@ -12,7 +12,7 @@
         android:text="Calculate"
         android:id="@+id/button_calculate"
         android:layout_marginTop="24dp"
-        android:onClick="calculate"
+        android:onClick="runCalculate"
         android:visibility="invisible"
         android:layout_below="@+id/text_vector_3_x"
         android:layout_alignParentLeft="true"
@@ -163,13 +163,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
         android:id="@+id/text_result"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:layout_alignTop="@+id/button_calculate"
-        android:layout_alignRight="@+id/button_cross"
-        android:layout_alignEnd="@+id/button_cross"
-        android:layout_marginRight="36dp"
-        android:layout_marginEnd="36dp" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
