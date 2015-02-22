@@ -3,7 +3,6 @@ package ca.mcgill.amv;
 /**
  * Created by Michael on 21/02/2015.
  */
-import android.app.Notification;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;

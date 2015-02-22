@@ -186,6 +186,7 @@
         android:id="@+id/chartBottom"
         android:layout_alignRight="@+id/text_vector_3_y"
         android:layout_alignEnd="@+id/text_vector_3_y"
-        android:layout_below="@+id/button_calculate" />
+        android:layout_below="@+id/button_calculate"
+        android:visibility="visible" />
 
 </RelativeLayout>
