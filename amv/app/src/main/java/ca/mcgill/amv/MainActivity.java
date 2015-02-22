@@ -90,7 +90,6 @@ public class MainActivity extends ActionBarActivity {
         vectorTwoTextView.setVisibility(View.VISIBLE);
         vectorThreeTextView.setVisibility(View.VISIBLE);
         results.setVisibility(View.VISIBLE);
-        results.setText("∠");
 
         setAdditionMode();
     }
@@ -251,28 +250,67 @@ public class MainActivity extends ActionBarActivity {
                 double[] vec2 = new double[]{0.0, 0.0};
                 double[] vec3 = new double[]{0.0, 0.0};
 
-                if (!vec1X.isEmpty() && !vec1Y.isEmpty()) {
-                    vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
+                if(!vec1X.isEmpty()) {
+                    vec1[0] = Double.parseDouble(vec1X);
                 }
-                if (!vec2X.isEmpty() && !vec2Y.isEmpty()) {
-                    vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+                if(!vec1Y.isEmpty()) {
+                    vec1[1] = Double.parseDouble(vec1Y);
                 }
-                if (!vec3X.isEmpty() && !vec3Y.isEmpty()) {
-                    vec3 = new double[]{Double.parseDouble(vec3X), Double.parseDouble(vec3Y)};
+
+                if(!vec2X.isEmpty()) {
+                    vec2[0] = Double.parseDouble(vec2X);
+                }
+                if(!vec2Y.isEmpty()) {
+                    vec2[1] = Double.parseDouble(vec2Y);
+                }
+
+                if(!vec3X.isEmpty()) {
+                    vec3[0] = Double.parseDouble(vec3X);
+                }
+                if(!vec3Y.isEmpty()) {
+                    vec3[1] = Double.parseDouble(vec3Y);
                 }
 
                 double[] result = vectorAddition(vec1, vec2, vec3);
                 if (chart != null) chart.setVector(result[0], result[1]);
                 return "{" + result[0] + ", " + result[1] + "}";
             } else if (isScalarProductMode) {
-                double[] vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
-                double[] vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+                double[] vec1 = new double[]{0.0, 0.0};
+                double[] vec2 = new double[]{0.0, 0.0};
+
+                if(!vec1X.isEmpty()) {
+                    vec1[0] = Double.parseDouble(vec1X);
+                }
+                if(!vec1Y.isEmpty()) {
+                    vec1[1] = Double.parseDouble(vec1Y);
+                }
+
+                if(!vec2X.isEmpty()) {
+                    vec2[0] = Double.parseDouble(vec2X);
+                }
+                if(!vec2Y.isEmpty()) {
+                    vec2[1] = Double.parseDouble(vec2Y);
+                }
 
                 if (chart != null) chart.setVector(0, 0);
                 return Double.toString(scalarVectorProduct(vec1, vec2));
             } else {
-                double[] vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
-                double[] vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+                double[] vec1 = new double[]{0.0, 0.0};
+                double[] vec2 = new double[]{0.0, 0.0};
+
+                if(!vec1X.isEmpty()) {
+                    vec1[0] = Double.parseDouble(vec1X);
+                }
+                if(!vec1Y.isEmpty()) {
+                    vec1[1] = Double.parseDouble(vec1Y);
+                }
+
+                if(!vec2X.isEmpty()) {
+                    vec2[0] = Double.parseDouble(vec2X);
+                }
+                if(!vec2Y.isEmpty()) {
+                    vec2[1] = Double.parseDouble(vec2Y);
+                }
 
                 if (chart != null) chart.setVector(0, 0);
                 return Double.toString(crossVectorProduct(vec1, vec2));
@@ -283,18 +321,30 @@ public class MainActivity extends ActionBarActivity {
                 double[] vec2 = new double[]{0.0, 0.0};
                 double[] vec3 = new double[]{0.0, 0.0};
 
-                if (!vec1X.isEmpty() && !vec1Y.isEmpty()) {
-                    vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
-                    vec1 = convertPolarToCartesianCoordinates(vec1);
+                if(!vec1X.isEmpty()) {
+                    vec1[0] = Double.parseDouble(vec1X);
                 }
-                if (!vec2X.isEmpty() && !vec2Y.isEmpty()) {
-                    vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
-                    vec2 = convertPolarToCartesianCoordinates(vec2);
+                if(!vec1Y.isEmpty()) {
+                    vec1[1] = Double.parseDouble(vec1Y);
                 }
-                if (!vec3X.isEmpty() && !vec3Y.isEmpty()) {
-                    vec3 = new double[]{Double.parseDouble(vec3X), Double.parseDouble(vec3Y)};
-                    vec3 = convertPolarToCartesianCoordinates(vec3);
+
+                if(!vec2X.isEmpty()) {
+                    vec2[0] = Double.parseDouble(vec2X);
                 }
+                if(!vec2Y.isEmpty()) {
+                    vec2[1] = Double.parseDouble(vec2Y);
+                }
+
+                if(!vec3X.isEmpty()) {
+                    vec3[0] = Double.parseDouble(vec3X);
+                }
+                if(!vec3Y.isEmpty()) {
+                    vec3[1] = Double.parseDouble(vec3Y);
+                }
+
+                vec1 = convertPolarToCartesianCoordinates(vec1);
+                vec2 = convertPolarToCartesianCoordinates(vec2);
+                vec3 = convertPolarToCartesianCoordinates(vec3);
 
                 double[] result = vectorAddition(vec1, vec2, vec3);
                 if (chart != null) chart.setVector(result[0], result[1]);
@@ -305,8 +355,19 @@ public class MainActivity extends ActionBarActivity {
                 double[] vec1 = new double[]{0.0, 0.0};
                 double[] vec2 = new double[]{0.0, 0.0};
 
-                vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
-                vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+                if(!vec1X.isEmpty()) {
+                    vec1[0] = Double.parseDouble(vec1X);
+                }
+                if(!vec1Y.isEmpty()) {
+                    vec1[1] = Double.parseDouble(vec1Y);
+                }
+
+                if(!vec2X.isEmpty()) {
+                    vec2[0] = Double.parseDouble(vec2X);
+                }
+                if(!vec2Y.isEmpty()) {
+                    vec2[1] = Double.parseDouble(vec2Y);
+                }
 
                 vec1 = convertPolarToCartesianCoordinates(vec1);
                 vec2 = convertPolarToCartesianCoordinates(vec2);
@@ -318,8 +379,19 @@ public class MainActivity extends ActionBarActivity {
                 double[] vec1 = new double[]{0.0, 0.0};
                 double[] vec2 = new double[]{0.0, 0.0};
 
-                vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
-                vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+                if(!vec1X.isEmpty()) {
+                    vec1[0] = Double.parseDouble(vec1X);
+                }
+                if(!vec1Y.isEmpty()) {
+                    vec1[1] = Double.parseDouble(vec1Y);
+                }
+
+                if(!vec2X.isEmpty()) {
+                    vec2[0] = Double.parseDouble(vec2X);
+                }
+                if(!vec2Y.isEmpty()) {
+                    vec2[1] = Double.parseDouble(vec2Y);
+                }
 
                 vec1 = convertPolarToCartesianCoordinates(vec1);
                 vec2 = convertPolarToCartesianCoordinates(vec2);

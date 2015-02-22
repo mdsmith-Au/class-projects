@@ -15,6 +15,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 1
     public void testOneValueForAddition() {
         double[] result = activity.vectorAddition(new double[] {1.0, 2.0}, new double[] {0.0, 0.0}, new double[] {0.0, 0.0});
 
@@ -24,6 +25,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 2
     public void testTwoValuesForAddition() {
         double[] result = activity.vectorAddition(new double[] {1.0, 2.0}, new double[] {3.0, 4.0}, new double[] {0.0, 0.0});
 
@@ -33,6 +35,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 3
     public void testThreeValuesForAddition() {
         double[] result = activity.vectorAddition(new double[] {-1.0, -2.0}, new double[] {1.0, 3.0}, new double[] {2.0, 4.0});
 
@@ -42,6 +45,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 4
     public void testScalarProduct() {
         double result = activity.scalarVectorProduct(new double[] {-1.0, 2.0}, new double[] {3.0, 7.5});
 
@@ -49,6 +53,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 5
     public void testCrossProduct() {
         double result = activity.crossVectorProduct(new double[] {-1.0, 2.0}, new double[] {3.0, 7.5});
 
@@ -56,6 +61,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 6
     public void testConvertPolarToCartesianCoordinates() {
         double[] result = activity.convertPolarToCartesianCoordinates(new double[] {-5.0, -50});
 
@@ -64,6 +70,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 7
     public void testAdditionModeSet() {
         activity.setAdditionMode();
 
@@ -73,6 +80,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 8
     public void testScalarProductMode() {
         activity.setScalarProductMode();
 
@@ -82,6 +90,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 9
     public void testCrossProductMode() {
         activity.setCrossProductMode();
 
@@ -91,6 +100,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 10
      public void testPolarModeSet() {
         activity.setPolarMode();
 
@@ -98,6 +108,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 11
     public void testCartesianMode() {
         activity.setPolarMode();
         MainActivity.setCartesianMode();
@@ -106,6 +117,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 12
      public void testVectorAdditionForOneCartesianValue() {
         activity.setCartesianMode();
         activity.setAdditionMode();
@@ -115,6 +127,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 13
     public void testVectorAdditionForTwoCartesianValue() {
         activity.setCartesianMode();
         activity.setAdditionMode();
@@ -124,6 +137,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 14
     public void testVectorAdditionForThreeCartesianValue() {
         activity.setCartesianMode();
         activity.setAdditionMode();
@@ -134,6 +148,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 15
     public void testScalarProductForCartesianVectors() {
         activity.setCartesianMode();
         activity.setScalarProductMode();
@@ -144,6 +159,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 16
     public void testCrossProductForCartesianVectors() {
         activity.setCartesianMode();
         activity.setCrossProductMode();
@@ -154,6 +170,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 17
     public void testConvertCartesianToPolarCoordinates() {
         double[] result = activity.convertCartesianToPolarCoordinates(new double[] {-5.0, 5.0});
 
@@ -162,6 +179,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 18
     public void testVectorAdditionForOnePolarValue() {
         activity.setPolarMode();
         activity.setAdditionMode();
@@ -171,6 +189,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 19
     public void testVectorAdditionForTwoPolarValue() {
         activity.setPolarMode();
         activity.setAdditionMode();
@@ -180,6 +199,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 20
     public void testVectorAdditionForThreePolarValue() {
         activity.setPolarMode();
         activity.setAdditionMode();
@@ -189,6 +209,7 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 21
     public void testScalarProductForPolarVectors() {
         activity.setPolarMode();
         activity.setScalarProductMode();
@@ -198,11 +219,18 @@ public class MainActivityTest {
     }
 
     @Test
+    // Test 22
     public void testCrossProductForPolarVectors() {
         activity.setPolarMode();
         activity.setCrossProductMode();
         String result = activity.calculate("5.6", "60.1", "2.11", "-30.0", "", "");
 
         assertEquals("-11.8160", result);
+    }
+
+    @Test
+    // Test 28
+    public void testInvalidInput() {
+
     }
 }
