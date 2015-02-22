@@ -67,42 +67,42 @@ public class MainActivityTest {
     public void testAdditionModeSet() {
         activity.setAdditionMode();
 
-        assertTrue(MainActivity.isAdditionMode);
-        assertFalse(MainActivity.isScalarProductMode);
-        assertFalse(MainActivity.isCrossProductMode);
+        assertTrue(activity.isAdditionMode);
+        assertFalse(activity.isScalarProductMode);
+        assertFalse(activity.isCrossProductMode);
     }
 
     @Test
     public void testScalarProductMode() {
         activity.setScalarProductMode();
 
-        assertFalse(MainActivity.isAdditionMode);
-        assertTrue(MainActivity.isScalarProductMode);
-        assertFalse(MainActivity.isCrossProductMode);
+        assertFalse(activity.isAdditionMode);
+        assertTrue(activity.isScalarProductMode);
+        assertFalse(activity.isCrossProductMode);
     }
 
     @Test
     public void testCrossProductMode() {
         activity.setCrossProductMode();
 
-        assertFalse(MainActivity.isAdditionMode);
-        assertFalse(MainActivity.isScalarProductMode);
-        assertTrue(MainActivity.isCrossProductMode);
+        assertFalse(activity.isAdditionMode);
+        assertFalse(activity.isScalarProductMode);
+        assertTrue(activity.isCrossProductMode);
     }
 
     @Test
      public void testPolarModeSet() {
         activity.setPolarMode();
 
-        assertTrue(MainActivity.inPolarMode);
+        assertTrue(activity.inPolarMode);
     }
 
     @Test
     public void testCartesianMode() {
         activity.setPolarMode();
-        MainActivity.setCartesianMode();
+        activity.setCartesianMode();
 
-        assertFalse(MainActivity.inPolarMode);
+        assertFalse(activity.inPolarMode);
     }
 
     @Test
