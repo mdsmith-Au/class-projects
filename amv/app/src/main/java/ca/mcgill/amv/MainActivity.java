@@ -17,17 +17,14 @@ public class MainActivity extends ActionBarActivity {
     public static boolean isCrossProductMode = false;
     public static boolean inPolarMode = false;
 
-    Chart chart;
+    public Chart chart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Chart chart = (Chart) this.findViewById(R.id.chartBottom);
-        Resources res = getResources();
-//        chart = new Chart(this);
-
+        chart = (Chart) this.findViewById(R.id.chartBottom);
     }
 
 
@@ -183,6 +180,7 @@ public class MainActivity extends ActionBarActivity {
                                   vec2XText.getText().toString(), vec2YText.getText().toString(),
                                   vec3XText.getText().toString(), vec3YText.getText().toString());
         results.setText(result);
+
     }
 
     public static double[] vectorAddition(double[] vec1, double[] vec2, double[] vec3) {
@@ -246,7 +244,7 @@ public class MainActivity extends ActionBarActivity {
         inPolarMode = false;
     }
 
-    public static String calculate(String vec1X, String vec1Y, String vec2X, String vec2Y, String vec3X, String vec3Y) {
+    public String calculate(String vec1X, String vec1Y, String vec2X, String vec2Y, String vec3X, String vec3Y) {
         if(!inPolarMode) {
             if (isAdditionMode) {
                 double[] vec1 = new double[]{0.0, 0.0};
@@ -264,16 +262,19 @@ public class MainActivity extends ActionBarActivity {
                 }
 
                 double[] result = vectorAddition(vec1, vec2, vec3);
+                if (chart != null) chart.setVector(result[0], result[1]);
                 return "{" + result[0] + ", " + result[1] + "}";
             } else if (isScalarProductMode) {
                 double[] vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
                 double[] vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
 
+                if (chart != null) chart.setVector(0, 0);
                 return Double.toString(scalarVectorProduct(vec1, vec2));
             } else {
                 double[] vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
                 double[] vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
 
+                if (chart != null) chart.setVector(0, 0);
                 return Double.toString(crossVectorProduct(vec1, vec2));
             }
         } else {
@@ -296,6 +297,7 @@ public class MainActivity extends ActionBarActivity {
                 }
 
                 double[] result = vectorAddition(vec1, vec2, vec3);
+                if (chart != null) chart.setVector(result[0], result[1]);
                 result = convertCartesianToPolarCoordinates(result);
                 return String.format("%.2f", result[0]) + "∠" + String.format("%.2f", result[1]) + "°";
             }
@@ -309,6 +311,7 @@ public class MainActivity extends ActionBarActivity {
                 vec1 = convertPolarToCartesianCoordinates(vec1);
                 vec2 = convertPolarToCartesianCoordinates(vec2);
 
+                if (chart != null) chart.setVector(0, 0);
                 return String.format("%.4f",scalarVectorProduct(vec1, vec2));
             }
             else {
@@ -321,6 +324,7 @@ public class MainActivity extends ActionBarActivity {
                 vec1 = convertPolarToCartesianCoordinates(vec1);
                 vec2 = convertPolarToCartesianCoordinates(vec2);
 
+                if (chart != null) chart.setVector(0, 0);
                 return String.format("%.4f",crossVectorProduct(vec1, vec2));
             }
         }
