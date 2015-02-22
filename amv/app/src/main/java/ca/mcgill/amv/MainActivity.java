@@ -1,5 +1,6 @@
 package ca.mcgill.amv;
 
+import android.content.res.Resources;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,10 +17,17 @@ public class MainActivity extends ActionBarActivity {
     public static boolean isCrossProductMode = false;
     public static boolean inPolarMode = false;
 
+    Chart chart;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final Chart chart = (Chart) this.findViewById(R.id.chartBottom);
+        Resources res = getResources();
+//        chart = new Chart(this);
+
     }
 
 
@@ -289,10 +297,32 @@ public class MainActivity extends ActionBarActivity {
 
                 double[] result = vectorAddition(vec1, vec2, vec3);
                 result = convertCartesianToPolarCoordinates(result);
-                return result[0] + "∠" + String.format("%.1f", result[1]) + "°";
+                return String.format("%.2f", result[0]) + "∠" + String.format("%.2f", result[1]) + "°";
+            }
+            else if (isScalarProductMode) {
+                double[] vec1 = new double[]{0.0, 0.0};
+                double[] vec2 = new double[]{0.0, 0.0};
+
+                vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
+                vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+
+                vec1 = convertPolarToCartesianCoordinates(vec1);
+                vec2 = convertPolarToCartesianCoordinates(vec2);
+
+                return String.format("%.4f",scalarVectorProduct(vec1, vec2));
+            }
+            else {
+                double[] vec1 = new double[]{0.0, 0.0};
+                double[] vec2 = new double[]{0.0, 0.0};
+
+                vec1 = new double[]{Double.parseDouble(vec1X), Double.parseDouble(vec1Y)};
+                vec2 = new double[]{Double.parseDouble(vec2X), Double.parseDouble(vec2Y)};
+
+                vec1 = convertPolarToCartesianCoordinates(vec1);
+                vec2 = convertPolarToCartesianCoordinates(vec2);
+
+                return String.format("%.4f",crossVectorProduct(vec1, vec2));
             }
         }
-
-        return "";
     }
 }

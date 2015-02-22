@@ -159,6 +159,42 @@ public class MainActivityTest {
         MainActivity.setAdditionMode();
         String result = MainActivity.calculate("5.0", "60.0", "", "", "", "");
 
-        assertEquals("5.0∠60.0°", result);
+        assertEquals("5.00∠60.00°", result);
+    }
+
+    @Test
+    public void testVectorAdditionForTwoPolarValue() {
+        MainActivity.setPolarMode();
+        MainActivity.setAdditionMode();
+        String result = MainActivity.calculate("5.0", "60.0", "2.0", "-30.0", "", "");
+
+        assertEquals("5.39∠38.20°", result);
+    }
+
+    @Test
+    public void testVectorAdditionForThreePolarValue() {
+        MainActivity.setPolarMode();
+        MainActivity.setAdditionMode();
+        String result = MainActivity.calculate("5.6", "60.1", "2.11", "-30.0", "10.98", "22.1");
+
+        assertEquals("16.78∠28.20°", result);
+    }
+
+    @Test
+    public void testScalarProductForPolarVectors() {
+        MainActivity.setPolarMode();
+        MainActivity.setScalarProductMode();
+        String result = MainActivity.calculate("5.6", "60.1", "2.11", "-30.0", "", "");
+
+        assertEquals("-0.0206", result);
+    }
+
+    @Test
+    public void testCrossProductForPolarVectors() {
+        MainActivity.setPolarMode();
+        MainActivity.setCrossProductMode();
+        String result = MainActivity.calculate("5.6", "60.1", "2.11", "-30.0", "", "");
+
+        assertEquals("-11.8160", result);
     }
 }
