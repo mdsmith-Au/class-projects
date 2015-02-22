@@ -1,6 +1,8 @@
 package ca.mcgill.amv;
 
+import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.app.AlertDialog;
 
 public class MainActivity extends ActionBarActivity {
     public static boolean isAdditionMode = false;
@@ -21,6 +24,20 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(Build.VERSION.SDK_INT < 14) {
+            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(this);
+            dlgAlert.setMessage("This application only supports Android version 4.0.0 or greater.");
+            dlgAlert.setTitle("Android Version Not Supported");
+            dlgAlert.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
+                    });
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
