@@ -21,11 +21,13 @@ public class UI {
     
     private static class uiProcess implements Runnable {
         public void run() {
+            System.out.println("Welcome to the Telecom Chat Client.");
             Scanner scanner = new Scanner(System.in).useDelimiter("\n");
             while (true) {
                 // Execute command here
                 String userInput = scanner.next();
                 if (userInput.equals("exit") || userInput.equals("quit")) {
+                    System.out.println("Bye!");
                     System.exit(0);
                 }
                 else {

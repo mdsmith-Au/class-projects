@@ -21,6 +21,8 @@ public class TelecomLab3 {
      */
     public static void main(String[] args) {
         UI ui = new UI(execServ);
+        CommHandler comm = new CommHandler(execServ, "ecse-489.ece.mcgill.ca", 5000);
+        comm.test();
     }
     
 }
