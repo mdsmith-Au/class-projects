@@ -27,18 +27,31 @@ public class CommandHandler {
             String cmdName = cmdComponents[0];
             cmdName = cmdName.substring(1);
 
+            // Treat the rest of the input as arguments
+            String args = new String();
+            if (cmdComponents.length > 1) {
+                args = cmdComponents[1];
+            }
+
             CommandEntry cmdEntry = clientCommandMap.get(cmdName);
             if (cmdEntry != null) {
+                String[] cmdArgs = null;
+                int numArgs = 0;
+                if (!args.isEmpty()) {
+                    cmdArgs = args.split(",");
+                    numArgs = cmdArgs.length;
+                }
+
                 int argc = cmdEntry.getArgCount();
                 Command handler = cmdEntry.getCommand();
 
                 // Handle arguments
-                if (argc > 0) {
-                    String[] cmdArgs = cmdComponents[1].split(",");
-                    handler.execute(cmdArgs);
+                if (numArgs < argc) { // number of supplied args < required args
+                    System.out.println("Error: " + cmdName + " must take " +
+                        argc + " argument(s).");
                 }
-                else if (argc == 0) {
-                    handler.execute(null);
+                else {
+                    handler.execute(cmdArgs);
                 }
             }
             else {
