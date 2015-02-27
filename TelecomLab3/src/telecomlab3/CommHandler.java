@@ -19,7 +19,7 @@ public class CommHandler {
         try {
             socket = new Socket(hostname, portNumber);
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Warning: Unable to connect to server at " + hostname);;
+            logger.log(Level.SEVERE, "Warning: Unable to connect to server at " + hostname);
         }
 
         try {
