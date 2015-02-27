@@ -3,10 +3,12 @@ package telecomlab3;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Message implements Serializable {
+public class Message {
 
     private int type, subType, size;
     private byte[] data;
@@ -22,12 +24,12 @@ public class Message implements Serializable {
     public static final int TYPE_SEND_MSG = 28;
     public static final int TYPE_QUERY_MSG = 29;
 
+    private static final Logger logger = Logger.getLogger(Message.class.getName());
+    
+    String endl = System.getProperty("line.separator");
+    
     public Message(int type, byte[] data) {
-        assert (data.length <= 262144);
-        this.type = type;
-        subType = 0;
-        size = data.length;
-        this.data = data;
+        this(type, 0, data);
     }
 
     public Message(int type, int subType, byte[] data) {
@@ -46,7 +48,11 @@ public class Message implements Serializable {
     }
 
     public Message(InputStream in) throws IOException, ClassNotFoundException {
-        readFromStream(in);
+        this.readFromStream(in);
+    }
+    
+    public Message(int type, String data) throws UnsupportedEncodingException {
+        this(type, data.getBytes("UTF-8"));
     }
 
     public int getType() {
@@ -94,5 +100,10 @@ public class Message implements Serializable {
         data = new byte[size];
         int bytesRead = in.read(data, 0, size);
         assert (bytesRead == size);
+    }
+    
+    @Override
+    public String toString()  {
+        return "Type: " + type + endl + "Subtype: " + subType + endl + "Size: " + size + endl + "Content: " + getDataAsString();
     }
 }

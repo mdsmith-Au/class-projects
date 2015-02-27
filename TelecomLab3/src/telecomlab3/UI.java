@@ -6,11 +6,11 @@ import telecomlab3.commands.*;
 
 public class UI {
 
-    public UI(ExecutorService executorService) {
+    public UI(ExecutorService executorService, CommHandler comm) {
         UIProcess ui = new UIProcess();
         executorService.submit(ui);
 
-        registerAllCommands();
+        registerAllCommands(comm);
     }
 
     private static class UIProcess implements Runnable {
@@ -39,10 +39,10 @@ public class UI {
         }
     }
 
-    private static void registerAllCommands() {
+    private static void registerAllCommands(CommHandler comm) {
         Command[] knownCmds = new Command[] {
-            new ExitCommand(),
-            new EchoCommand(),
+            new ExitCommand(comm),
+            new EchoCommand(comm),
         };
 
         CommandHandler cmdHandler = CommandHandler.getInstance();

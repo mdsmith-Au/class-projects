@@ -1,11 +1,18 @@
 package telecomlab3.commands;
 
+import telecomlab3.CommHandler;
 import telecomlab3.Command;
 
 public class ExitCommand implements Command {
     private final String name = "exit";
     private final int argCount = 0;
 
+    CommHandler comm;
+    
+    public ExitCommand(CommHandler comm) {
+        this.comm = comm;
+    }
+    
     @Override
     public String getName() {
         return name;

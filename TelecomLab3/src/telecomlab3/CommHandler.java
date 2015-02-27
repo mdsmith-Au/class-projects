@@ -10,12 +10,15 @@ import java.util.logging.Logger;
 
 public class CommHandler {
 
-    private Logger logger = Logger.getLogger(CommHandler.class.getName());
+    private static final Logger logger = Logger.getLogger(CommHandler.class.getName());
+    ExecutorService execServ;
+
     Socket socket;
     BufferedOutputStream out;
     BufferedInputStream in;
 
     public CommHandler(ExecutorService executorService, String hostname, int portNumber) {
+        execServ = executorService;
         try {
             socket = new Socket(hostname, portNumber);
         } catch (IOException ex) {
@@ -29,23 +32,37 @@ public class CommHandler {
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Warning: Unable to properly communicate with server");
         }
-
+        logger.log(Level.INFO, "Connected to the Telecom Server at " + hostname + ":" + portNumber);
 
     }
 
-    public void test() {
-        try {
-            String echoMsg = "This is really a test. Really. UTF!!!! : HajoƸ̵̡Ӝ̵̨̄Ʒ哈乔";
-            byte[] byteArray = echoMsg.getBytes("UTF-8");
-            Message msg = new Message(Message.TYPE_ECHO, byteArray);
+    public void sendMessage(Message msg) {
+        messageProcess proc = new messageProcess(msg);
+        execServ.submit(proc);
+    }
 
-            msg.writeToStream(out);
-            out.flush();
+    private class messageProcess implements Runnable {
 
-            Message msgResponse = new Message(in);
-            System.out.println("Message : " + msgResponse.getDataAsString());
-        } catch (Exception ex) {
-            Logger.getLogger(CommHandler.class.getName()).log(Level.SEVERE, null, ex);
+        private Message message;
+
+        public messageProcess(Message msg) {
+            message = msg;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                message.writeToStream(out);
+                out.flush();
+                Message msgResponse = new Message(in);
+                ResponseHandler.processResponse(msgResponse);
+                
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                logger.log(Level.SEVERE, null, ex);
+            }
         }
     }
 
