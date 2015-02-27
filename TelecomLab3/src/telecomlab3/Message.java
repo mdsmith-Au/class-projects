@@ -23,6 +23,33 @@ public class Message {
     public static final int TYPE_CREATE_STORE = 27;
     public static final int TYPE_SEND_MSG = 28;
     public static final int TYPE_QUERY_MSG = 29;
+    
+    public static final int SUBTYPE_DELETE_USER_SUCCESS = 0;
+    public static final int SUBTYPE_DELETE_USER_NOT_LOG_IN = 1;
+    public static final int SUBTYPE_DELETE_USER_ERROR = 2;
+    public static final int SUBTYPE_CREATE_USER_SUCCESS = 0;
+    public static final int SUBTYPE_CREATE_USER_EXISTS = 1;
+    public static final int SUBTYPE_CREATE_USER_LOGGED_IN = 2;
+    public static final int SUBTYPE_CREATE_USER_BAD_FORMAT = 3;
+    public static final int SUBTYPE_CREATE_STORE_SUCCESS = 0;
+    public static final int SUBTYPE_CREATE_STORE_EXISTS = 1;
+    public static final int SUBTYPE_CREATE_STORE_NOT_LOG_IN = 2;
+    public static final int SUBTYPE_LOGIN_SUCCESS = 0;
+    public static final int SUBTYPE_LOGIN_ALREADY_LOG_IN = 1;
+    public static final int SUBTYPE_LOGIN_BAD_CREDENTIAL = 2;
+    public static final int SUBTYPE_LOGIN_BAD_FORMAT = 3;
+    public static final int SUBTYPE_LOGOFF_SUCCESS = 0;
+    public static final int SUBTYPE_LOGOFF_NOT_LOG_IN = 1;
+    public static final int SUBTYPE_LOGOFF_SESSION_EXPIRED = 2;
+    public static final int SUBTYPE_SEND_MSG_SUCCESS = 0;
+    public static final int SUBTYPE_SEND_MSG_FAIL_DATA_STORE = 1;
+    public static final int SUBTYPE_SEND_MSG_USER_NOT_EXIST = 2;
+    public static final int SUBTYPE_SEND_MSG_USER_NOT_LOGIN = 3;
+    public static final int SUBTYPE_SEND_MSG_BAD_FORMAT = 4;
+    public static final int SUBTYPE_QUERY_MSG_NO_MSG = 0;
+    public static final int SUBTYPE_QUERY_MSG_MESSAGES = 1;
+    
+    
 
     private static final Logger logger = Logger.getLogger(Message.class.getName());
     

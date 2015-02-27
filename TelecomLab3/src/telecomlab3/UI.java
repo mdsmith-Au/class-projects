@@ -6,10 +6,14 @@ import telecomlab3.commands.*;
 
 public class UI {
 
+    private User user;
+    
     public UI(ExecutorService executorService, CommHandler comm) {
         UIProcess ui = new UIProcess();
         executorService.submit(ui);
 
+        user = new User();
+        
         registerAllCommands(comm);
     }
 
@@ -39,10 +43,12 @@ public class UI {
         }
     }
 
-    private static void registerAllCommands(CommHandler comm) {
+    private void registerAllCommands(CommHandler comm) {
         Command[] knownCmds = new Command[] {
             new ExitCommand(comm),
             new EchoCommand(comm),
+            new RegisterCommand(comm, user),
+            new LoginCommand(comm, user)
         };
 
         CommandHandler cmdHandler = CommandHandler.getInstance();

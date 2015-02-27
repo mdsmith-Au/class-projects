@@ -36,17 +36,19 @@ public class CommHandler {
 
     }
 
-    public void sendMessage(Message msg) {
-        messageProcess proc = new messageProcess(msg);
+    public void sendMessage(Message msg, Callback call) {
+        messageProcess proc = new messageProcess(msg, call);
         execServ.submit(proc);
     }
 
     private class messageProcess implements Runnable {
 
         private Message message;
+        private Callback call;
 
-        public messageProcess(Message msg) {
+        public messageProcess(Message msg, Callback call) {
             message = msg;
+            this.call = call;
         }
 
         @Override
@@ -56,7 +58,7 @@ public class CommHandler {
                 message.writeToStream(out);
                 out.flush();
                 Message msgResponse = new Message(in);
-                ResponseHandler.processResponse(msgResponse);
+                call.handleResponse(msgResponse);
                 
             } catch (IOException ex) {
                 logger.log(Level.SEVERE, null, ex);

@@ -3,17 +3,18 @@ package telecomlab3.commands;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import telecomlab3.Callback;
 import telecomlab3.CommHandler;
 import telecomlab3.Command;
 import telecomlab3.Message;
 
-public class EchoCommand implements Command {
+public class EchoCommand implements Command, Callback {
     private final String name = "echo";
     private final int argCount = 1;
 
     private static final Logger logger = Logger.getLogger(EchoCommand.class.getName());
     
-    CommHandler comm;
+    private final CommHandler comm;
     
     public EchoCommand(CommHandler comm) {
         this.comm = comm;
@@ -32,7 +33,7 @@ public class EchoCommand implements Command {
         }
         else {
             try {
-                comm.sendMessage(new Message(Message.TYPE_ECHO, arguments[0]));
+                comm.sendMessage(new Message(Message.TYPE_ECHO, arguments[0]), this);
             } catch (UnsupportedEncodingException ex) {
                 logger.log(Level.SEVERE, null, ex);
             }
@@ -46,5 +47,10 @@ public class EchoCommand implements Command {
     @Override
     public int getArgCount() {
         return argCount;
+    }
+
+    @Override
+    public void handleResponse(Message msg) {
+        System.out.println(msg.toString());
     }
 }
