@@ -48,6 +48,8 @@ public class Message {
     public static final int SUBTYPE_SEND_MSG_BAD_FORMAT = 4;
     public static final int SUBTYPE_QUERY_MSG_NO_MSG = 0;
     public static final int SUBTYPE_QUERY_MSG_MESSAGES = 1;
+    // Not documented in PDF; on discussion board
+    public static final int SUBTYPE_QUERY_MSG_NOT_LOG_IN = 2;
     
     
 

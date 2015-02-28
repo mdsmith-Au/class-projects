@@ -26,27 +26,27 @@ public class User {
         isLoggedIn = false;
     }
     
-    public String getUsername() {
+    public synchronized String getUsername() {
         return username;
     }
     
-    public String getPassword() {
+    public synchronized String getPassword() {
         return password;
     }
     
-    public void setLogin(boolean state) {
+    public synchronized void setLogin(boolean state) {
         isLoggedIn = state;
     }
     
-    public boolean getLoginState() {
+    public synchronized boolean getLoginState() {
         return isLoggedIn;
     }
     
-    public void setUsername(String username) {
+    public synchronized void setUsername(String username) {
         this.username = username;
     }
     
-    public void setPassword(String password) {
+    public synchronized void setPassword(String password) {
         this.password = password;
     }
 }

@@ -106,13 +106,13 @@ public class RegisterCommand implements Command, Callback {
     private void createStore() {
         try {
             // Create store
-            comm.sendMessage(new Message(Message.TYPE_LOGIN, "CREATESTORE"), this);
+            comm.sendMessage(new Message(Message.TYPE_CREATE_STORE, " "), this);
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, null, ex);
         }
     }
 
     private void success() {
-        System.out.println("User successfully created or already exists.");
+        System.out.println("User successfully created.");
     }
 }

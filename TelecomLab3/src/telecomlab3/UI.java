@@ -45,11 +45,14 @@ public class UI {
 
     private void registerAllCommands(CommHandler comm) {
         Command[] knownCmds = new Command[] {
-            new ExitCommand(comm),
+            new ExitCommand(comm, user),
             new EchoCommand(comm),
             new RegisterCommand(comm, user),
             new LoginCommand(comm, user),
-            new DeleteCommand(comm, user)
+            new DeleteCommand(comm, user),
+            new LogoffCommand(comm, user),
+            new SendMessageCommand(comm, user),
+            new QueryMessageCommand(comm, user)
         };
 
         CommandHandler cmdHandler = CommandHandler.getInstance();

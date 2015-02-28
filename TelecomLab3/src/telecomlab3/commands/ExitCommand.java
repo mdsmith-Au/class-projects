@@ -1,16 +1,25 @@
 package telecomlab3.commands;
 
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import telecomlab3.CommHandler;
 import telecomlab3.Command;
+import telecomlab3.Message;
+import telecomlab3.User;
 
 public class ExitCommand implements Command {
     private final String name = "exit";
     private final int argCount = 0;
 
-    CommHandler comm;
+    private static final Logger logger = Logger.getLogger(ExitCommand.class.getName());
     
-    public ExitCommand(CommHandler comm) {
+    private CommHandler comm;
+    private User user;
+    
+    public ExitCommand(CommHandler comm, User user) {
         this.comm = comm;
+        this.user = user;
     }
     
     @Override
@@ -20,15 +29,13 @@ public class ExitCommand implements Command {
 
     @Override
     public void execute(String[] arguments) {
-        // TODO
-        /*  This command requests that the
-            current connection to the server
-            be terminated and the current user
-            logged out. This command has no
-            corresponding message data. If
-            data is sent to the server, it is
-            ignored.
-        */
+        if (user != null && user.getLoginState()) {
+            try {
+                comm.sendMessage(new Message(Message.TYPE_EXIT, " "), null);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, null, ex);
+            }
+        }
         System.exit(0);
     }
 

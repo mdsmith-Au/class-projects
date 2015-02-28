@@ -38,7 +38,7 @@ public class DeleteCommand implements Command, Callback {
             System.out.println("Error: user not logged in.");
         } else {
             try {
-                comm.sendMessage(new Message(Message.TYPE_DELETE_USER, "DELETE"), this);
+                comm.sendMessage(new Message(Message.TYPE_DELETE_USER, " "), this);
             } catch (UnsupportedEncodingException ex) {
                 logger.log(Level.SEVERE, null, ex);
             }

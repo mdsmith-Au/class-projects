@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import telecomlab3.commands.LoginCommand;
 
 /**
  *
@@ -20,6 +21,8 @@ public class ResponseHandler {
 
     private InputStream in;
     private HashMap<Integer, Callback> callbackMap;
+    
+    private static final Logger logger = Logger.getLogger(LoginCommand.class.getName());
 
     public ResponseHandler(ExecutorService execService, InputStream in) {
         this.in = in;
@@ -47,13 +50,11 @@ public class ResponseHandler {
                         callbackMap.remove(messageType);
                     }
                     else {
-                        System.out.println(responseMsg.toString());
+                        System.out.println("New unexpected message from server: " + responseMsg.getDataAsString());
                     }
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(ResponseHandler.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ResponseHandler.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException | ClassNotFoundException ex) {
+                logger.log(Level.SEVERE, null, ex);
             }
         }
 
