@@ -55,6 +55,7 @@ public class LogoffCommand implements Command, Callback {
                 user.setLogin(false);
             } else if (msg.getSubType() == Message.SUBTYPE_LOGOFF_SESSION_EXPIRED) {
                 System.out.println("Cannot logoff; session already expired.");
+                user.setLogin(false);
             }
         }
     }
