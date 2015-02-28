@@ -21,7 +21,7 @@ public class ResponseHandler {
 
     private InputStream in;
     private HashMap<Integer, Callback> callbackMap;
-    
+
     private static final Logger logger = Logger.getLogger(LoginCommand.class.getName());
 
     public ResponseHandler(ExecutorService execService, InputStream in) {
@@ -36,6 +36,15 @@ public class ResponseHandler {
         callbackMap.put(type, call);
     }
 
+    public void addCallbackMapPermanent(int type, Callback call) {
+        // This will cause an exception if it already exists; we want that
+        callbackMap.put(type, call);
+    }
+    
+    public void removeFromCallbackMap(int type) {
+        callbackMap.remove(type);
+    }
+
     private class responseProcess implements Runnable {
 
         @Override
@@ -48,8 +57,7 @@ public class ResponseHandler {
                         // Run callback
                         callbackMap.get(messageType).handleResponse(responseMsg);
                         callbackMap.remove(messageType);
-                    }
-                    else {
+                    } else {
                         System.out.println("New unexpected message from server: " + responseMsg.getDataAsString());
                     }
                 }

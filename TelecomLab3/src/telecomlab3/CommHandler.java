@@ -25,7 +25,7 @@ public class CommHandler {
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Warning: Unable to connect to server at " + hostname);
         }
-        
+
         try {
             in = new BufferedInputStream(socket.getInputStream());
             out = new BufferedOutputStream(socket.getOutputStream());
@@ -43,6 +43,18 @@ public class CommHandler {
         execServ.submit(proc);
     }
 
+    public void sendMessagePermanentCallback(Message msg, Callback call) {
+        messageProcess proc = new messageProcess(msg);
+        respHandle.addCallbackMapPermanent(msg.getType(), call);
+        execServ.submit(proc);
+    }
+    
+    // Message = message with callback type to remove
+    // Content can be anything; it is ignored
+    public void removeCallback(Message msg) {
+        respHandle.removeFromCallbackMap(msg.getType());
+    }
+
     private class messageProcess implements Runnable {
 
         private Message message;
@@ -56,7 +68,7 @@ public class CommHandler {
 
             try {
                 message.writeToStream(out);
-                out.flush();                
+                out.flush();
 
             } catch (IOException ex) {
                 logger.log(Level.SEVERE, null, ex);
