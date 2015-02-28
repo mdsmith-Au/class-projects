@@ -48,7 +48,8 @@ public class UI {
             new ExitCommand(comm),
             new EchoCommand(comm),
             new RegisterCommand(comm, user),
-            new LoginCommand(comm, user)
+            new LoginCommand(comm, user),
+            new DeleteCommand(comm, user)
         };
 
         CommandHandler cmdHandler = CommandHandler.getInstance();

@@ -35,8 +35,15 @@ public class LoginCommand implements Command, Callback {
             // TODO
             System.out.println("Error: bad number of arguments.");
         } else {
-            user = new User(arguments[0], arguments[1]);
-            login();
+            if (user != null && user.getLoginState()) {
+                System.out.println("User already logged in.");
+            } else {
+                user.setUsername(arguments[0]);
+                user.setPassword(arguments[1]);
+                user.setLogin(false);
+                login();
+            }
+
         }
 
     }
@@ -51,8 +58,10 @@ public class LoginCommand implements Command, Callback {
         if (msg.getType() == Message.TYPE_LOGIN) {
             if (msg.getSubType() == Message.SUBTYPE_LOGIN_SUCCESS) {
                 System.out.println("User successfully logged in.");
+                user.setLogin(true);
             } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_ALREADY_LOG_IN) {
                 System.out.println("User already logged in.");
+                user.setLogin(true);
             } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_BAD_CREDENTIAL) {
                 System.out.println("Bad user credentials.");
             } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_BAD_FORMAT) {

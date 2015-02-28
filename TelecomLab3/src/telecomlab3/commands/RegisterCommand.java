@@ -36,9 +36,13 @@ public class RegisterCommand implements Command, Callback {
             System.out.println("Error: bad number of arguments.");
         } else {
             try {
-                // Register user
-                user = new User(arguments[0], arguments[1]);
-                comm.sendMessage(new Message(Message.TYPE_CREATE_USER, arguments[0] + ',' + arguments[1]), this);
+                if (user != null && user.getLoginState()) {
+                    System.out.println("Error: user already logged in.");
+                } else {
+                    user.setUsername(arguments[0]);
+                    user.setPassword(arguments[1]);
+                    comm.sendMessage(new Message(Message.TYPE_CREATE_USER, user.getUsername() + ',' + user.getPassword()), this);
+                }
 
             } catch (UnsupportedEncodingException ex) {
                 logger.log(Level.SEVERE, "Unable to register new user with username {0}", arguments[0]);
@@ -70,6 +74,7 @@ public class RegisterCommand implements Command, Callback {
         } else if (msg.getType() == Message.TYPE_LOGIN) {
             if (msg.getSubType() == Message.SUBTYPE_LOGIN_SUCCESS) {
                 System.out.println("User successfully logged in.");
+                user.setLogin(true);
                 createStore();
             } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_ALREADY_LOG_IN) {
                 System.out.println("User already logged in.");
@@ -101,12 +106,12 @@ public class RegisterCommand implements Command, Callback {
     private void createStore() {
         try {
             // Create store
-            comm.sendMessage(new Message(Message.TYPE_LOGIN, ""), this);
+            comm.sendMessage(new Message(Message.TYPE_LOGIN, "CREATESTORE"), this);
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void success() {
         System.out.println("User successfully created or already exists.");
     }

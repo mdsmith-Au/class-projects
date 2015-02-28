@@ -41,4 +41,12 @@ public class User {
     public boolean getLoginState() {
         return isLoggedIn;
     }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
