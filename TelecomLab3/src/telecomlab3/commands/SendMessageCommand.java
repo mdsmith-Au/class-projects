@@ -11,7 +11,7 @@ import telecomlab3.User;
 
 public class SendMessageCommand implements Command, Callback {
 
-    private final String name = "sendMsg";
+    private final String name = "send";
     private final int argCount = 2;
 
     private static final Logger logger = Logger.getLogger(SendMessageCommand.class.getName());
