@@ -7,13 +7,13 @@ import telecomlab3.commands.*;
 public class UI {
 
     private User user;
-    
+
     public UI(ExecutorService executorService, CommHandler comm, User user) {
         UIProcess ui = new UIProcess();
         executorService.submit(ui);
 
         this.user = user;
-        
+
         registerAllCommands(comm);
     }
 
@@ -30,15 +30,6 @@ public class UI {
 
                 CommandHandler cmdHandler = CommandHandler.getInstance();
                 cmdHandler.parseCommand(userInput);
-
-                /*
-                if (userInput.equals("exit") || userInput.equals("quit")) {
-                    System.out.println("Bye!");
-                    System.exit(0);
-                }
-                else {
-                    System.out.println("Unknown command " + userInput);
-                }*/
             }
         }
     }

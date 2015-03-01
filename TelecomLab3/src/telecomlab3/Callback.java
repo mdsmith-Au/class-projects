@@ -1,4 +1,3 @@
-
 package telecomlab3;
 
 public interface Callback {

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package telecomlab3;
 
 import java.io.IOException;
@@ -13,10 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import telecomlab3.commands.LoginCommand;
 
-/**
- *
- * @author Michael
- */
 public class ResponseHandler {
 
     private InputStream in;
@@ -41,13 +32,12 @@ public class ResponseHandler {
         //Hashmap accepts duplicates as long as they are the same map I believe
         callbackMapPerm.put(type, call);
     }
-    
+
     public void removeFromCallbackMapPerm(int type) {
         callbackMapPerm.remove(type);
     }
 
     private class responseProcess implements Runnable {
-
         @Override
         public void run() {
             try {
@@ -58,7 +48,7 @@ public class ResponseHandler {
                     if (callbackMap.containsKey(messageType)) {
                         callbackMap.get(messageType).handleResponse(responseMsg);
                         callbackMap.remove(messageType);
-                    } 
+                    }
                     // Check if exists as a permanent callback
                     else if (callbackMapPerm.containsKey(messageType)){
                         callbackMapPerm.get(messageType).handleResponse(responseMsg);
@@ -72,6 +62,5 @@ public class ResponseHandler {
                 logger.log(Level.SEVERE, null, ex);
             }
         }
-
     }
 }

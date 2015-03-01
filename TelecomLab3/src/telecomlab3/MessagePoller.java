@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package telecomlab3;
 
 import java.io.UnsupportedEncodingException;
@@ -12,18 +7,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Michael
- */
-public class MsgPoller implements Callback {
+public class MessagePoller implements Callback {
 
-    private static final Logger logger = Logger.getLogger(MsgPoller.class.getName());
+    private static final Logger logger = Logger.getLogger(MessagePoller.class.getName());
 
     private final CommHandler comm;
     private User user;
 
-    public MsgPoller(CommHandler comm, User user) {
+    public MessagePoller(CommHandler comm, User user) {
         this.comm = comm;
         this.user = user;
 
@@ -49,8 +40,6 @@ public class MsgPoller implements Callback {
         else if (msg.getSubType() != Message.SUBTYPE_QUERY_MSG_NO_MSG) {
             System.out.println("Error polling: " + msg.getDataAsString());
         }
-        
-
     }
 
     // TODO: Is having this and handleRespons outside the Runnable class going to cause issues?

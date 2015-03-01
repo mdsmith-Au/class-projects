@@ -11,8 +11,7 @@ public class TelecomLab3 {
         CommHandler comm = new CommHandler(execServ, "ecse-489.ece.mcgill.ca", 5001);
         User user = new User();
         UI ui = new UI(execServ, comm, user);
-        MsgPoller poller = new MsgPoller(comm, user);
+        MessagePoller poller = new MessagePoller(comm, user);
 
-        //TODO : Logoff -> timeout message?
     }
 }

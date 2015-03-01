@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Message {
-
     private int type, subType, size;
     private byte[] data;
 
@@ -23,7 +22,7 @@ public class Message {
     public static final int TYPE_CREATE_STORE = 27;
     public static final int TYPE_SEND_MSG = 28;
     public static final int TYPE_QUERY_MSG = 29;
-    
+
     public static final int SUBTYPE_DELETE_USER_SUCCESS = 0;
     public static final int SUBTYPE_DELETE_USER_NOT_LOG_IN = 1;
     public static final int SUBTYPE_DELETE_USER_ERROR = 2;
@@ -50,13 +49,11 @@ public class Message {
     public static final int SUBTYPE_QUERY_MSG_MESSAGES = 1;
     // Not documented in PDF; on discussion board
     public static final int SUBTYPE_QUERY_MSG_NOT_LOG_IN = 2;
-    
-    
 
     private static final Logger logger = Logger.getLogger(Message.class.getName());
-    
+
     String endl = System.getProperty("line.separator");
-    
+
     public Message(int type, byte[] data) {
         this(type, 0, data);
     }
@@ -79,7 +76,7 @@ public class Message {
     public Message(InputStream in) throws IOException, ClassNotFoundException {
         this.readFromStream(in);
     }
-    
+
     public Message(int type, String data) throws UnsupportedEncodingException {
         this(type, data.getBytes("UTF-8"));
     }
@@ -130,7 +127,7 @@ public class Message {
         int bytesRead = in.read(data, 0, size);
         assert (bytesRead == size);
     }
-    
+
     @Override
     public String toString()  {
         return "Type: " + type + endl + "Subtype: " + subType + endl + "Size: " + size + endl + "Content: " + getDataAsString();

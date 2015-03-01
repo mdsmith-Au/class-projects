@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CommHandler {
-
     private static final Logger logger = Logger.getLogger(CommHandler.class.getName());
     private ExecutorService execServ;
 
@@ -46,12 +45,12 @@ public class CommHandler {
         respHandle.addCallbackMapPermanent(msg.getType(), call);
         createSendThread(msg);
     }
-    
+
     private void createSendThread(Message msg) {
         messageProcess proc = new messageProcess(msg);
         execServ.submit(proc);
     }
-    
+
     // Message = message with callback type to remove
     // Content can be anything; it is ignored
     public void removeCallbackPerm(Message msg) {
