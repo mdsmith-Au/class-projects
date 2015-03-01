@@ -21,28 +21,29 @@ public class ResponseHandler {
 
     private InputStream in;
     private HashMap<Integer, Callback> callbackMap;
+    private HashMap<Integer, Callback> callbackMapPerm;
 
     private static final Logger logger = Logger.getLogger(LoginCommand.class.getName());
 
     public ResponseHandler(ExecutorService execService, InputStream in) {
         this.in = in;
         this.callbackMap = new HashMap<>();
+        this.callbackMapPerm = new HashMap<>();
         responseProcess respP = new responseProcess();
         execService.submit(respP);
     }
 
     public void addCallbackMap(int type, Callback call) {
-        // This will cause an exception if it already exists; we want that
         callbackMap.put(type, call);
     }
 
     public void addCallbackMapPermanent(int type, Callback call) {
-        // This will cause an exception if it already exists; we want that
-        callbackMap.put(type, call);
+        //Hashmap accepts duplicates as long as they are the same map I believe
+        callbackMapPerm.put(type, call);
     }
     
-    public void removeFromCallbackMap(int type) {
-        callbackMap.remove(type);
+    public void removeFromCallbackMapPerm(int type) {
+        callbackMapPerm.remove(type);
     }
 
     private class responseProcess implements Runnable {
@@ -53,11 +54,17 @@ public class ResponseHandler {
                 while (true) {
                     Message responseMsg = new Message(in);
                     int messageType = responseMsg.getType();
+                    // Run normal callback
                     if (callbackMap.containsKey(messageType)) {
-                        // Run callback
                         callbackMap.get(messageType).handleResponse(responseMsg);
                         callbackMap.remove(messageType);
-                    } else {
+                    } 
+                    // Check if exists as a permanent callback
+                    else if (callbackMapPerm.containsKey(messageType)){
+                        callbackMapPerm.get(messageType).handleResponse(responseMsg);
+                    }
+                    // Unexpected message
+                    else {
                         System.out.println("New unexpected message from server: " + responseMsg.getDataAsString());
                     }
                 }

@@ -61,38 +61,21 @@ public class RegisterCommand implements Command, Callback {
     public void handleResponse(Message msg) {
         if (msg.getType() == Message.TYPE_CREATE_USER) {
             if (msg.getSubType() == Message.SUBTYPE_CREATE_USER_SUCCESS) {
-                System.out.println("User successfully created.");
                 login();
-            } else if (msg.getSubType() == Message.SUBTYPE_CREATE_USER_EXISTS) {
-                System.out.println("User already exists.");
             } else if (msg.getSubType() == Message.SUBTYPE_CREATE_USER_LOGGED_IN) {
-                System.out.println("User already logged in when creating user.");
                 createStore();
-            } else if (msg.getSubType() == Message.SUBTYPE_CREATE_USER_BAD_FORMAT) {
-                System.out.println("Bad format for user create message.");
             }
         } else if (msg.getType() == Message.TYPE_LOGIN) {
             if (msg.getSubType() == Message.SUBTYPE_LOGIN_SUCCESS) {
-                System.out.println("User successfully logged in.");
                 user.setLogin(true);
                 createStore();
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_ALREADY_LOG_IN) {
-                System.out.println("User already logged in.");
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_BAD_CREDENTIAL) {
-                System.out.println("Bad user credentials.");
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_BAD_FORMAT) {
-                System.out.println("Bad format for user login message.");
             }
         } else if (msg.getType() == Message.TYPE_CREATE_STORE) {
             if (msg.getSubType() == Message.SUBTYPE_CREATE_STORE_SUCCESS) {
-                System.out.println("User store succesfully created.");
-                success();
-            } else if (msg.getSubType() == Message.SUBTYPE_CREATE_STORE_NOT_LOG_IN) {
-                System.out.println("User not logged in for creating store.");
-            } else if (msg.getSubType() == Message.SUBTYPE_CREATE_STORE_EXISTS) {
-                System.out.println("User store already exists.");
+                System.out.println("Registration successful.");
             }
         }
+        System.out.println(msg.getDataAsString());
     }
 
     private void login() {
@@ -112,7 +95,4 @@ public class RegisterCommand implements Command, Callback {
         }
     }
 
-    private void success() {
-        System.out.println("User successfully created.");
-    }
 }

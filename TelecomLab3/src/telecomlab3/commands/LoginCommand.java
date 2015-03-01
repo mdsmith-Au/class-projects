@@ -54,20 +54,14 @@ public class LoginCommand implements Command, Callback {
     }
 
     @Override
+    // Message is always of type login
     public void handleResponse(Message msg) {
-        if (msg.getType() == Message.TYPE_LOGIN) {
-            if (msg.getSubType() == Message.SUBTYPE_LOGIN_SUCCESS) {
-                System.out.println("User successfully logged in.");
-                user.setLogin(true);
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_ALREADY_LOG_IN) {
-                System.out.println("User already logged in.");
-                user.setLogin(true);
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_BAD_CREDENTIAL) {
-                System.out.println("Bad user credentials.");
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_BAD_FORMAT) {
-                System.out.println("Bad format for user login message.");
-            }
+        if (msg.getSubType() == Message.SUBTYPE_LOGIN_SUCCESS) {
+            user.setLogin(true);
+        } else if (msg.getSubType() == Message.SUBTYPE_LOGIN_ALREADY_LOG_IN) {
+            user.setLogin(true);
         }
+        System.out.println(msg.getDataAsString());
     }
 
     private void login() {

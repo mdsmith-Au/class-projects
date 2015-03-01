@@ -44,20 +44,10 @@ public class LogoffCommand implements Command, Callback {
     }
 
     @Override
+    // Message is always logoff type
     public void handleResponse(Message msg) {
-        if (msg.getType() == Message.TYPE_LOGOFF) {
-            if (msg.getSubType() == Message.SUBTYPE_LOGOFF_SUCCESS) {
-                System.out.println("User successfully logged off.");
-                user.setLogin(false);
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGOFF_NOT_LOG_IN) {
-                System.out.println("Cannot logoff; user not logged in.");
-                // Just in case our code screwed up somewhere
-                user.setLogin(false);
-            } else if (msg.getSubType() == Message.SUBTYPE_LOGOFF_SESSION_EXPIRED) {
-                System.out.println("Cannot logoff; session already expired.");
-                user.setLogin(false);
-            }
-        }
+        user.setLogin(false);
+        System.out.println(msg.getDataAsString());
     }
 
     private void logoff() {

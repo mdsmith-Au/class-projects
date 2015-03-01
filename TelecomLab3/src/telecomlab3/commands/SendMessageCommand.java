@@ -50,22 +50,11 @@ public class SendMessageCommand implements Command, Callback {
     }
 
     @Override
+    // Message always of send message type
     public void handleResponse(Message msg) {
-        if (msg.getType() == Message.TYPE_SEND_MSG) {
-            if (msg.getSubType() == Message.SUBTYPE_SEND_MSG_SUCCESS) {
-                System.out.println("Message sent.");
-            } else if (msg.getSubType() == Message.SUBTYPE_SEND_MSG_USER_NOT_LOGIN) {
-                System.out.println("Error: cannot send message; user not logged in.");
-            } else if (msg.getSubType() == Message.SUBTYPE_SEND_MSG_USER_NOT_EXIST) {
-                System.out.println("Error: cannot send message; user does not exist.");
-            } else if (msg.getSubType() == Message.SUBTYPE_SEND_MSG_FAIL_DATA_STORE) {
-                System.out.println("Error: destination user does not have a data store.");
-            } else if (msg.getSubType() == Message.SUBTYPE_SEND_MSG_BAD_FORMAT) {
-                System.out.println("Error: bad message format for sending message.");
-            }
-        }
+        System.out.println(msg.getDataAsString());
     }
-    
+
     private void sendMessageToUser(String user, String message) {
         try {
             comm.sendMessage(new Message(Message.TYPE_SEND_MSG, user + ',' + message), this);

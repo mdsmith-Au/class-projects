@@ -8,11 +8,11 @@ public class UI {
 
     private User user;
     
-    public UI(ExecutorService executorService, CommHandler comm) {
+    public UI(ExecutorService executorService, CommHandler comm, User user) {
         UIProcess ui = new UIProcess();
         executorService.submit(ui);
 
-        user = new User();
+        this.user = user;
         
         registerAllCommands(comm);
     }
@@ -51,8 +51,7 @@ public class UI {
             new LoginCommand(comm, user),
             new DeleteCommand(comm, user),
             new LogoffCommand(comm, user),
-            new SendMessageCommand(comm, user),
-            new QueryMessageCommand(comm, user)
+            new SendMessageCommand(comm, user)
         };
 
         CommandHandler cmdHandler = CommandHandler.getInstance();

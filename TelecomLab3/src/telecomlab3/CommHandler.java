@@ -38,21 +38,24 @@ public class CommHandler {
     }
 
     public void sendMessage(Message msg, Callback call) {
-        messageProcess proc = new messageProcess(msg);
         respHandle.addCallbackMap(msg.getType(), call);
-        execServ.submit(proc);
+        createSendThread(msg);
     }
 
     public void sendMessagePermanentCallback(Message msg, Callback call) {
-        messageProcess proc = new messageProcess(msg);
         respHandle.addCallbackMapPermanent(msg.getType(), call);
+        createSendThread(msg);
+    }
+    
+    private void createSendThread(Message msg) {
+        messageProcess proc = new messageProcess(msg);
         execServ.submit(proc);
     }
     
     // Message = message with callback type to remove
     // Content can be anything; it is ignored
-    public void removeCallback(Message msg) {
-        respHandle.removeFromCallbackMap(msg.getType());
+    public void removeCallbackPerm(Message msg) {
+        respHandle.removeFromCallbackMapPerm(msg.getType());
     }
 
     private class messageProcess implements Runnable {

@@ -38,9 +38,6 @@ public class EchoCommand implements Command, Callback {
                 logger.log(Level.SEVERE, null, ex);
             }
         }
-
-        // TODO will need to pass the arguments to create a message, which can
-        // then be passed to the CommHandler
         
     }
 

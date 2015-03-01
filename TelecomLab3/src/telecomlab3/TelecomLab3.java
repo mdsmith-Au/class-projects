@@ -8,11 +8,11 @@ public class TelecomLab3 {
     private static final ExecutorService execServ = Executors.newCachedThreadPool();
 
     public static void main(String[] args) {
-        CommHandler comm = new CommHandler(execServ, "ecse-489.ece.mcgill.ca", 5000);
-        UI ui = new UI(execServ, comm);
+        CommHandler comm = new CommHandler(execServ, "ecse-489.ece.mcgill.ca", 5001);
+        User user = new User();
+        UI ui = new UI(execServ, comm, user);
+        MsgPoller poller = new MsgPoller(comm, user);
 
-        // TODO: Poller
-        //TODO: Handle multple messages
         //TODO : Logoff -> timeout message?
     }
 }

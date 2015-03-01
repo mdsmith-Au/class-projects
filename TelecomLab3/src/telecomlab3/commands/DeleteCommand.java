@@ -53,18 +53,14 @@ public class DeleteCommand implements Command, Callback {
 
     @Override
     public void handleResponse(Message msg) {
-        if (msg.getType() == Message.TYPE_DELETE_USER) {
-            if (msg.getSubType() == Message.SUBTYPE_DELETE_USER_SUCCESS) {
-                System.out.println("User successfully deleted.");
-                user.setLogin(false);
-                user.setUsername(null);
-                user.setPassword(null);
-            } else if (msg.getSubType() == Message.SUBTYPE_DELETE_USER_NOT_LOG_IN) {
-                System.out.println("User not logged in; cannot delete.");
-            } else if (msg.getSubType() == Message.SUBTYPE_DELETE_USER_ERROR) {
-                System.out.println("Error deleting user.");
-            }
+        if (msg.getSubType() == Message.SUBTYPE_DELETE_USER_SUCCESS) {
+            user.setLogin(false);
+            user.setUsername(null);
+            user.setPassword(null);
+        } else if (msg.getSubType() == Message.SUBTYPE_DELETE_USER_NOT_LOG_IN) {
+            user.setLogin(false);
         }
+        System.out.println(msg.getDataAsString());
     }
 
 }
