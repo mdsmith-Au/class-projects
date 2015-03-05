@@ -8,37 +8,49 @@ import telecomlab3.CommHandler;
 import telecomlab3.Command;
 import telecomlab3.Message;
 
+/**
+ * Represents the echo command. Server will respond with contents of message
+ * sent.
+ *
+ * @author Michael
+ */
 public class EchoCommand implements Command, Callback {
+
     private final String name = "echo";
     private final int argCount = 1;
 
     private static final Logger logger = Logger.getLogger(EchoCommand.class.getName());
-    
+
     private final CommHandler comm;
-    
+
+    /**
+     * Initializes the command.
+     *
+     * @param comm The {@link CommHandler CommHanlder} to use when sending
+     * messages.
+     */
     public EchoCommand(CommHandler comm) {
         this.comm = comm;
     }
-    
+
     @Override
     public String getName() {
         return name;
     }
 
     @Override
+    // Message always of type echo
     public void execute(String[] arguments) {
         if (arguments.length != argCount) {
-            // TODO
             System.out.println("Error: bad number of arguments.");
-        }
-        else {
+        } else {
             try {
                 comm.sendMessage(new Message(Message.TYPE_ECHO, arguments[0]), this);
             } catch (UnsupportedEncodingException ex) {
                 logger.log(Level.SEVERE, null, ex);
             }
         }
-        
+
     }
 
     @Override

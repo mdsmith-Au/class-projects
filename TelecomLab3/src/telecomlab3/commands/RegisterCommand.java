@@ -9,6 +9,10 @@ import telecomlab3.Command;
 import telecomlab3.Message;
 import telecomlab3.User;
 
+/**
+ *
+ * @author Michael
+ */
 public class RegisterCommand implements Command, Callback {
 
     private final String name = "register";
@@ -19,16 +23,29 @@ public class RegisterCommand implements Command, Callback {
     private final CommHandler comm;
     private User user;
 
+    /**
+     * Initializes the command.
+     * @param comm The {@link CommHandler CommHanlder} to use when sending messages.
+     * @param user The {@link User User} to use for representing the current user.
+     */
     public RegisterCommand(CommHandler comm, User user) {
         this.comm = comm;
         this.user = user;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param arguments
+     */
     @Override
     public void execute(String[] arguments) {
         if (arguments.length != argCount) {
@@ -52,11 +69,19 @@ public class RegisterCommand implements Command, Callback {
 
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int getArgCount() {
         return argCount;
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void handleResponse(Message msg) {
         if (msg.getType() == Message.TYPE_CREATE_USER) {

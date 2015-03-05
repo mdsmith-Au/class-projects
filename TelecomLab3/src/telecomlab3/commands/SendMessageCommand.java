@@ -9,6 +9,10 @@ import telecomlab3.Command;
 import telecomlab3.Message;
 import telecomlab3.User;
 
+/**
+ *
+ * @author Michael
+ */
 public class SendMessageCommand implements Command, Callback {
 
     private final String name = "send";
@@ -19,16 +23,29 @@ public class SendMessageCommand implements Command, Callback {
     private final CommHandler comm;
     private User user;
 
+    /**
+     * Initializes the command.
+     * @param comm The {@link CommHandler CommHanlder} to use when sending messages.
+     * @param user The {@link User User} to use for representing the current user.
+     */
     public SendMessageCommand(CommHandler comm, User user) {
         this.comm = comm;
         this.user = user;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param arguments
+     */
     @Override
     public void execute(String[] arguments) {
         if (arguments.length != argCount) {
@@ -44,11 +61,19 @@ public class SendMessageCommand implements Command, Callback {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int getArgCount() {
         return argCount;
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     // Message always of send message type
     public void handleResponse(Message msg) {

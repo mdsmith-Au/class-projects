@@ -9,6 +9,11 @@ import telecomlab3.Command;
 import telecomlab3.Message;
 import telecomlab3.User;
 
+/**
+ * Handles the logoff command.
+ *
+ * @author Michael
+ */
 public class LogoffCommand implements Command, Callback {
 
     private final String name = "logoff";
@@ -17,8 +22,16 @@ public class LogoffCommand implements Command, Callback {
     private static final Logger logger = Logger.getLogger(LogoffCommand.class.getName());
 
     private final CommHandler comm;
-    private User user;
+    private final User user;
 
+    /**
+     * Initializes the command.
+     *
+     * @param comm The {@link CommHandler CommHanlder} to use when sending
+     * messages.
+     * @param user The {@link User User} to use for representing the current
+     * user.
+     */
     public LogoffCommand(CommHandler comm, User user) {
         this.comm = comm;
         this.user = user;

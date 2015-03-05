@@ -40,8 +40,7 @@ public class MessageTest {
     public void testReadFromStream() throws Exception {
         System.out.println("readFromStream");
         InputStream in = null;
-        Message instance = new Message();
-        instance.readFromStream(in);
+        Message instance = new Message(in);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
