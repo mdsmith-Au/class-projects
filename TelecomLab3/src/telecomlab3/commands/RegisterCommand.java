@@ -10,6 +10,8 @@ import telecomlab3.Message;
 import telecomlab3.User;
 
 /**
+ * Handles the register command. Creates a new user, logs in, and creates the
+ * data store in that order.
  *
  * @author Michael
  */
@@ -21,35 +23,29 @@ public class RegisterCommand implements Command, Callback {
     private static final Logger logger = Logger.getLogger(RegisterCommand.class.getName());
 
     private final CommHandler comm;
-    private User user;
+    private final User user;
 
     /**
      * Initializes the command.
-     * @param comm The {@link CommHandler CommHanlder} to use when sending messages.
-     * @param user The {@link User User} to use for representing the current user.
+     *
+     * @param comm The {@link CommHandler CommHanlder} to use when sending
+     * messages.
+     * @param user The {@link User User} to use for representing the current
+     * user.
      */
     public RegisterCommand(CommHandler comm, User user) {
         this.comm = comm;
         this.user = user;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return name;
     }
 
-    /**
-     *
-     * @param arguments
-     */
     @Override
     public void execute(String[] arguments) {
         if (arguments.length != argCount) {
-            // TODO
             System.out.println("Error: bad number of arguments.");
         } else {
             try {
@@ -69,19 +65,11 @@ public class RegisterCommand implements Command, Callback {
 
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getArgCount() {
         return argCount;
     }
 
-    /**
-     *
-     * @param msg
-     */
     @Override
     public void handleResponse(Message msg) {
         if (msg.getType() == Message.TYPE_CREATE_USER) {
@@ -114,6 +102,8 @@ public class RegisterCommand implements Command, Callback {
     private void createStore() {
         try {
             // Create store
+            // We send a string with a space (not an emtpy string) because
+            // the server never responds if we send an empty string
             comm.sendMessage(new Message(Message.TYPE_CREATE_STORE, " "), this);
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, null, ex);

@@ -41,6 +41,8 @@ public class ExitCommand implements Command {
     public void execute(String[] arguments) {
 
         try {
+            // We send a string with a space (not an emtpy string) because
+            // the server never responds if we send an empty string
             comm.sendMessage(new Message(Message.TYPE_EXIT, " "), null);
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, null, ex);
@@ -49,7 +51,6 @@ public class ExitCommand implements Command {
     }
 
     // Note that there is no handler here because we don't wait for any server response.
-    
     @Override
     public int getArgCount() {
         return argCount;

@@ -32,6 +32,7 @@ public class UI {
         this.comm = comm;
 
         registerAllCommands();
+
     }
 
     // The thread that runs the listener
@@ -42,9 +43,8 @@ public class UI {
             Thread thread = Thread.currentThread();
             thread.setName("UI Process");
 
-            System.out.println("Welcome to the Telecom Chat Client.");
-
             Scanner scanner = new Scanner(System.in);
+            System.out.println("Program running. Awaiting user input.");
 
             while (true) {
                 // Wait for user input (this blocks unless they hit Enter)
@@ -75,8 +75,15 @@ public class UI {
 
         CommandHandler cmdHandler = CommandHandler.getInstance();
 
+        System.out.println("All commands be called by specifying a '/' before the command."
+                + "\nArguments for commands are seperated with a space from the command itself."
+                + "\nMultiple arguments are delimited by commas.  As an example, to login with"
+                + "\nthe user bob and password test, the command is as follows:"
+                + "\n/login bob,test "
+                + "\nBelow is a list of all commands and their number of arguments.");
         for (Command cmd : knownCmds) {
             cmdHandler.registerCommand(cmd.getName(), cmd.getArgCount(), cmd);
+            System.out.println("Command: " + cmd.getName() + " || # Arguments: " + cmd.getArgCount());
         }
 
     }

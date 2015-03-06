@@ -10,6 +10,7 @@ import telecomlab3.Message;
 import telecomlab3.User;
 
 /**
+ * Handles the sending of messages to other users.
  *
  * @author Michael
  */
@@ -21,35 +22,29 @@ public class SendMessageCommand implements Command, Callback {
     private static final Logger logger = Logger.getLogger(SendMessageCommand.class.getName());
 
     private final CommHandler comm;
-    private User user;
+    private final User user;
 
     /**
      * Initializes the command.
-     * @param comm The {@link CommHandler CommHanlder} to use when sending messages.
-     * @param user The {@link User User} to use for representing the current user.
+     *
+     * @param comm The {@link CommHandler CommHanlder} to use when sending
+     * messages.
+     * @param user The {@link User User} to use for representing the current
+     * user.
      */
     public SendMessageCommand(CommHandler comm, User user) {
         this.comm = comm;
         this.user = user;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return name;
     }
 
-    /**
-     *
-     * @param arguments
-     */
     @Override
     public void execute(String[] arguments) {
         if (arguments.length != argCount) {
-            // TODO
             System.out.println("Error: bad number of arguments.");
         } else {
             if (user != null && user.getLoginState()) {
@@ -61,19 +56,11 @@ public class SendMessageCommand implements Command, Callback {
         }
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getArgCount() {
         return argCount;
     }
 
-    /**
-     *
-     * @param msg
-     */
     @Override
     // Message always of send message type
     public void handleResponse(Message msg) {
