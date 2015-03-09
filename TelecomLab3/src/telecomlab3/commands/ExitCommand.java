@@ -8,6 +8,11 @@ import telecomlab3.Command;
 import telecomlab3.Message;
 import telecomlab3.User;
 
+/**
+ * Handles the exit command.
+ *
+ * @author Michael
+ */
 public class ExitCommand implements Command {
 
     private final String name = "exit";
@@ -15,12 +20,16 @@ public class ExitCommand implements Command {
 
     private static final Logger logger = Logger.getLogger(ExitCommand.class.getName());
 
-    private CommHandler comm;
-    private User user;
+    private final CommHandler comm;
 
-    public ExitCommand(CommHandler comm, User user) {
+    /**
+     * Initializes the command.
+     *
+     * @param comm The {@link CommHandler CommHanlder} to use when sending
+     * messages.
+     */
+    public ExitCommand(CommHandler comm) {
         this.comm = comm;
-        this.user = user;
     }
 
     @Override
@@ -32,6 +41,8 @@ public class ExitCommand implements Command {
     public void execute(String[] arguments) {
 
         try {
+            // We send a string with a space (not an emtpy string) because
+            // the server never responds if we send an empty string
             comm.sendMessage(new Message(Message.TYPE_EXIT, " "), null);
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, null, ex);
@@ -39,6 +50,7 @@ public class ExitCommand implements Command {
         System.exit(0);
     }
 
+    // Note that there is no handler here because we don't wait for any server response.
     @Override
     public int getArgCount() {
         return argCount;

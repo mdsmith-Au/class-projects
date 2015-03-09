@@ -2,12 +2,18 @@ package telecomlab3;
 
 import java.util.HashMap;
 
+/**
+ * Processes user commands and sends them to appropriate handlers.
+ *
+ * @author Kevin Dam
+ */
 public class CommandHandler {
+
     private static CommandHandler instance;
     private final HashMap<String, CommandEntry> clientCommandMap;
 
     private CommandHandler() {
-        clientCommandMap = new HashMap<String, CommandEntry>();
+        clientCommandMap = new HashMap<>();
     }
 
     public void registerCommand(String cmdString, int argc, Command handler) {
@@ -47,14 +53,12 @@ public class CommandHandler {
 
                 // Handle arguments
                 if (numArgs < argc) { // number of supplied args < required args
-                    System.out.println("Error: " + cmdName + " must take " +
-                        argc + " argument(s).");
-                }
-                else {
+                    System.out.println("Error: " + cmdName + " must take "
+                            + argc + " argument(s).");
+                } else {
                     handler.execute(cmdArgs);
                 }
-            }
-            else {
+            } else {
                 // TODO: replace with exception?
                 System.out.println("Unknown command: " + cmdName);
             }
@@ -69,6 +73,7 @@ public class CommandHandler {
     }
 
     class CommandEntry {
+
         private final Command command;
         private final int argc;
 
