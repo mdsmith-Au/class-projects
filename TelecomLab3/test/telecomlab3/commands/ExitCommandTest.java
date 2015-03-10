@@ -5,6 +5,7 @@
  */
 package telecomlab3.commands;
 
+import junit.runner.Version;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,13 +20,14 @@ import telecomlab3.User;
  *
  * @author Michael
  */
-public class LogoffCommandTest {
+public class ExitCommandTest {
 
+    
     private CommHandler comm;
     private User user;
-    private LogoffCommand log;
+    private ExitCommand exit;
 
-    public LogoffCommandTest() {
+    public ExitCommandTest() {
     }
 
     @BeforeClass
@@ -38,10 +40,9 @@ public class LogoffCommandTest {
 
     @Before
     public void setUp() {
+        user = new User();
         comm = new CommHandler();
-        user = new User("Bob", "BobsPass");
-        user.setLogin(true);
-        log = new LogoffCommand(comm, user);
+        exit = new ExitCommand(comm);
     }
 
     @After
@@ -49,33 +50,42 @@ public class LogoffCommandTest {
     }
 
     /**
-     * Test of getName method, of class LogoffCommand.
+     * Test of getName method, of class ExitCommand.
      */
     @Test
     public void testGetName() {
-        String expResult = "logoff";
-        String result = log.getName();
+
+        String expResult = "exit";
+        String result = exit.getName();
         assertEquals(expResult, result);
+
     }
 
     /**
-     * Test of execute and handleResponse methods, of class LogoffCommand.
+     * Test of execute method, of class ExitCommand.
      */
     @Test
-    public void testExecuteAndHandleResponse() {
-        log.execute(null);
-        log.handleResponse(new Message(Message.TYPE_LOGOFF, Message.SUBTYPE_LOGOFF_SUCCESS, new byte[] {}));
-        assertEquals(user.getLoginState(), false);
-
+    public void testExecute() {
+        /* 
+        Can't be tested with this version of Junit, because
+        we need support to check for JVM exit
+        exit.execute(null);
+        i.e. expect.expectSystemExit();
+        where as a class variable
+        
+        @Rule
+        public final ExpectedSystemExit expect = ExpectedSystemExit.none();
+        */
     }
 
     /**
-     * Test of getArgCount method, of class LogoffCommand.
+     * Test of getArgCount method, of class ExitCommand.
      */
     @Test
     public void testGetArgCount() {
+
         int expResult = 0;
-        int result = log.getArgCount();
+        int result = exit.getArgCount();
         assertEquals(expResult, result);
 
     }
@@ -84,8 +94,9 @@ public class LogoffCommandTest {
 
         @Override
         public void sendMessage(Message msg, Callback call) {
-            assertEquals(msg.getType(), Message.TYPE_LOGOFF);
+            assertEquals(msg.getType(), Message.TYPE_EXIT);
             assertEquals(msg.getSubType(), 0);
         }
     }
+
 }

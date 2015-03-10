@@ -19,13 +19,13 @@ import telecomlab3.User;
  *
  * @author Michael
  */
-public class LogoffCommandTest {
+public class DeleteCommandTest {
 
     private CommHandler comm;
     private User user;
-    private LogoffCommand log;
+    private DeleteCommand del;
 
-    public LogoffCommandTest() {
+    public DeleteCommandTest() {
     }
 
     @BeforeClass
@@ -41,7 +41,7 @@ public class LogoffCommandTest {
         comm = new CommHandler();
         user = new User("Bob", "BobsPass");
         user.setLogin(true);
-        log = new LogoffCommand(comm, user);
+        del = new DeleteCommand(comm, user);
     }
 
     @After
@@ -49,42 +49,53 @@ public class LogoffCommandTest {
     }
 
     /**
-     * Test of getName method, of class LogoffCommand.
+     * Test of getName method, of class DeleteCommand.
      */
     @Test
     public void testGetName() {
-        String expResult = "logoff";
-        String result = log.getName();
+
+        String expResult = "delete";
+        String result = del.getName();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of execute and handleResponse methods, of class LogoffCommand.
+     * Test of execute method, of class DeleteCommand.
      */
     @Test
-    public void testExecuteAndHandleResponse() {
-        log.execute(null);
-        log.handleResponse(new Message(Message.TYPE_LOGOFF, Message.SUBTYPE_LOGOFF_SUCCESS, new byte[] {}));
-        assertEquals(user.getLoginState(), false);
+    public void testExecute() {
+        String arguments = "";
+        del.execute(arguments);
 
     }
 
     /**
-     * Test of getArgCount method, of class LogoffCommand.
+     * Test of getArgCount method, of class DeleteCommand.
      */
     @Test
     public void testGetArgCount() {
         int expResult = 0;
-        int result = log.getArgCount();
+        int result = del.getArgCount();
         assertEquals(expResult, result);
+    }
 
+    /**
+     * Test of handleResponse method, of class DeleteCommand.
+     */
+    @Test
+    public void testHandleResponse() {
+        Message msg = new Message(Message.TYPE_DELETE_USER, Message.SUBTYPE_CREATE_USER_SUCCESS, new byte[] {});
+        del.handleResponse(msg);
+        assertEquals(user.getLoginState(), false);
+        assertEquals(user.getUsername(), null);
+        assertEquals(user.getPassword(), null);
     }
 
     class CommHandler extends telecomlab3.CommHandler {
 
         @Override
         public void sendMessage(Message msg, Callback call) {
-            assertEquals(msg.getType(), Message.TYPE_LOGOFF);
+            assertEquals(msg.getType(), Message.TYPE_DELETE_USER);
             assertEquals(msg.getSubType(), 0);
         }
     }

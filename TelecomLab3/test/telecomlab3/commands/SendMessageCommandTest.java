@@ -19,13 +19,13 @@ import telecomlab3.User;
  *
  * @author Michael
  */
-public class LogoffCommandTest {
+public class SendMessageCommandTest {
 
     private CommHandler comm;
     private User user;
-    private LogoffCommand log;
-
-    public LogoffCommandTest() {
+    private SendMessageCommand send;
+    
+    public SendMessageCommandTest() {
     }
 
     @BeforeClass
@@ -39,9 +39,9 @@ public class LogoffCommandTest {
     @Before
     public void setUp() {
         comm = new CommHandler();
-        user = new User("Bob", "BobsPass");
+        user = new User("bob2","bobsPass");
         user.setLogin(true);
-        log = new LogoffCommand(comm, user);
+        send = new SendMessageCommand(comm, user);
     }
 
     @After
@@ -49,33 +49,33 @@ public class LogoffCommandTest {
     }
 
     /**
-     * Test of getName method, of class LogoffCommand.
+     * Test of getName method, of class SendMessageCommand.
      */
     @Test
     public void testGetName() {
-        String expResult = "logoff";
-        String result = log.getName();
+
+        String expResult = "send";
+        String result = send.getName();
         assertEquals(expResult, result);
+
     }
 
     /**
-     * Test of execute and handleResponse methods, of class LogoffCommand.
+     * Test of execute method, of class SendMessageCommand.
      */
     @Test
-    public void testExecuteAndHandleResponse() {
-        log.execute(null);
-        log.handleResponse(new Message(Message.TYPE_LOGOFF, Message.SUBTYPE_LOGOFF_SUCCESS, new byte[] {}));
-        assertEquals(user.getLoginState(), false);
-
+    public void testExecute() {
+        send.execute("bob,This is a Test Message");
     }
 
     /**
-     * Test of getArgCount method, of class LogoffCommand.
+     * Test of getArgCount method, of class SendMessageCommand.
      */
     @Test
     public void testGetArgCount() {
-        int expResult = 0;
-        int result = log.getArgCount();
+
+        int expResult = 2;
+        int result = send.getArgCount();
         assertEquals(expResult, result);
 
     }
@@ -84,8 +84,10 @@ public class LogoffCommandTest {
 
         @Override
         public void sendMessage(Message msg, Callback call) {
-            assertEquals(msg.getType(), Message.TYPE_LOGOFF);
+            assertEquals(msg.getType(), Message.TYPE_SEND_MSG);
             assertEquals(msg.getSubType(), 0);
+            assertEquals(msg.getDataAsString(), "bob,This is a Test Message");
         }
     }
+
 }
