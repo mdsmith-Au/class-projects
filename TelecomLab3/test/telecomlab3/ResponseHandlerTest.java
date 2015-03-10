@@ -27,8 +27,6 @@ import static org.junit.Assert.*;
  */
 public class ResponseHandlerTest {
     
-    private boolean callbackRan;
-    
     public ResponseHandlerTest() {
     }
     
@@ -42,80 +40,10 @@ public class ResponseHandlerTest {
     
     @Before
     public void setUp() {
-        callbackRan = false;
     }
     
     @After
     public void tearDown() {
-    }
-
-    /**
-     * Test of addCallbackMap method, of class ResponseHandler.
-     */
-    @Test
-    public void testAddCallbackMap() {
-        System.out.println("addCallbackMap");
-        int type = 0;
-        Callback call = null;
-        ResponseHandler instance = null;
-        instance.addCallbackMap(type, call);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of addCallbackMapPermanent method, of class ResponseHandler.
-     */
-    @Test
-    public void testAddCallbackMapPermanent() {
-        System.out.println("addCallbackMapPermanent");
-        int type = 0;
-        Callback call = null;
-        ResponseHandler instance = null;
-        instance.addCallbackMapPermanent(type, call);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of removeFromCallbackMapPerm method, of class ResponseHandler.
-     */
-    @Test
-    public void testRemoveFromCallbackMapPerm() {
-        System.out.println("removeFromCallbackMapPerm");
-        int type = 0;
-        ResponseHandler instance = null;
-        instance.removeFromCallbackMapPerm(type);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getPermanentMap method, of class ResponseHandler.
-     */
-    @Test
-    public void testGetPermanentMap() {
-        System.out.println("getPermanentMap");
-        ResponseHandler instance = null;
-        HashMap<Integer, Callback> expResult = null;
-        HashMap<Integer, Callback> result = instance.getPermanentMap();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getMap method, of class ResponseHandler.
-     */
-    @Test
-    public void testGetMap() {
-        System.out.println("getMap");
-        ResponseHandler instance = null;
-        HashMap<Integer, Callback> expResult = null;
-        HashMap<Integer, Callback> result = instance.getMap();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
     @Test
@@ -144,7 +72,7 @@ public class ResponseHandlerTest {
         MockCallback mock = new MockCallback();
         resp.addCallbackMap(Message.TYPE_SEND_MSG, mock);
         resp.startListening();
-        
+
         exec.shutdown();
         exec.awaitTermination(10, TimeUnit.SECONDS);
     }

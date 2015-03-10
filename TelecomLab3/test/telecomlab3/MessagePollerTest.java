@@ -39,7 +39,7 @@ public class MessagePollerTest {
     @Before
     public void setUp() {
         comm = new CommHandler();
-        user = new User();
+        user = new User("bob","Bobpass");
         user.setLogin(true);
     }
 
@@ -56,6 +56,8 @@ public class MessagePollerTest {
 
        ScheduledExecutorService execServSched = Executors.newSingleThreadScheduledExecutor();
        poll = new MessagePoller(comm, user, execServSched);
+       // Because this is scheduled, we wait for it to run
+       Thread.sleep(2100);
        execServSched.shutdown();
        execServSched.awaitTermination(10, TimeUnit.SECONDS);
 
@@ -67,8 +69,6 @@ public class MessagePollerTest {
         public void sendMessagePermanentCallback(Message msg, Callback call) {
             assertEquals(msg.getType(), Message.TYPE_QUERY_MSG);
             assertEquals(msg.getSubType(), 0);
-
-            fail();
         }
     }
 
