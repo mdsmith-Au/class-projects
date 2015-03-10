@@ -44,6 +44,12 @@ public class ExitCommand implements Command {
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, null, ex);
         }
+        try {
+            // Wait for command to be sent to server
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ExitCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
         System.exit(0);
     }
 

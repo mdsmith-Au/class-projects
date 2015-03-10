@@ -114,9 +114,10 @@ public class ResponseHandler {
                     else if (callbackMapPerm.containsKey(messageType)) {
                         callbackMapPerm.get(messageType).handleResponse(responseMsg);
                     } // No in any of our maps, so we aren't expecting it
-                    else {
-                        System.out.println("New unexpected message from server of type " + responseMsg.getType() + " and sub type " + responseMsg.getSubType() + " with content:\n" + responseMsg.getDataAsString());
+                    else if (responseMsg.getType() == Message.TYPE_LOGOFF && responseMsg.getSubType() == Message.SUBTYPE_LOGOFF_SESSION_EXPIRED) {
+                        System.out.println("Server says user session has expired.");
                     }
+                    
                 }
             } catch (IOException | ClassNotFoundException ex) {
                 logger.log(Level.SEVERE, null, ex);
