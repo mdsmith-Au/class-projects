@@ -68,6 +68,14 @@ public class ResponseHandler {
         callbackMapPerm.remove(type);
     }
 
+    public HashMap<Integer, Callback> getPermanentMap() {
+        return callbackMapPerm;
+    }
+
+    public HashMap<Integer, Callback> getMap() {
+        return callbackMap;
+    }
+
     // Handles the server responses
     private class ResponseProcess implements Runnable {
         private Message responseMsg;

@@ -54,6 +54,13 @@ public class CommandHandler {
         return instance;
     }
 
+    /**
+     * @return command to command handler mapping
+     */
+    public HashMap<String, CommandEntry> getMapping() {
+        return clientCommandMap;
+    }
+
     class CommandEntry {
 
         private final Command command;

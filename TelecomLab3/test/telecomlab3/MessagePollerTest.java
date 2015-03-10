@@ -20,28 +20,29 @@ import static org.junit.Assert.*;
  * @author Michael
  */
 public class MessagePollerTest {
-    
+
     private CommHandler comm;
     private User user;
     private MessagePoller poll;
-    
+
     public MessagePollerTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
         comm = new CommHandler();
         user = new User();
+        user.setLogin(true);
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -52,21 +53,23 @@ public class MessagePollerTest {
      */
     @Test
     public void testPolling() throws InterruptedException {
-        
+
        ScheduledExecutorService execServSched = Executors.newSingleThreadScheduledExecutor();
        poll = new MessagePoller(comm, user, execServSched);
        execServSched.shutdown();
        execServSched.awaitTermination(10, TimeUnit.SECONDS);
-        
+
     }
-    
+
     class CommHandler extends telecomlab3.CommHandler {
-        
+
         @Override
         public void sendMessagePermanentCallback(Message msg, Callback call) {
             assertEquals(msg.getType(), Message.TYPE_QUERY_MSG);
             assertEquals(msg.getSubType(), 0);
+
+            fail();
         }
     }
-    
+
 }
