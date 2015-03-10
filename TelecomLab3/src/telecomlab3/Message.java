@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Defines the contents of a message.
@@ -298,7 +300,12 @@ public class Message {
      * @return The message data as a String.
      */
     public String getDataAsString() {
-        return new String(data);
+        try {
+            return new String(data, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     /**

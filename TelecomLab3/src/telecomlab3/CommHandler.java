@@ -18,8 +18,13 @@ public class CommHandler {
     private Socket socket;
     private BufferedOutputStream out;
     private BufferedInputStream in;
-    private final ResponseHandler respHandle;
+    private ResponseHandler respHandle;
 
+    /**
+     * Empty constructor for testing override purposes.
+     */
+    public CommHandler() {}
+    
     /**
      * Create the connection to the remote server.
      *
