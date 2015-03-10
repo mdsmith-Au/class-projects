@@ -9,9 +9,7 @@ import telecomlab3.Message;
 import telecomlab3.User;
 
 /**
- * Handles the exit command.
- *
- * @author Michael
+ * Terminates the application.
  */
 public class ExitCommand implements Command {
 
@@ -38,8 +36,7 @@ public class ExitCommand implements Command {
     }
 
     @Override
-    public void execute(String[] arguments) {
-
+    public void execute(String arguments) {
         try {
             // We send a string with a space (not an emtpy string) because
             // the server never responds if we send an empty string

@@ -12,8 +12,6 @@ import telecomlab3.User;
 /**
  * Handles the register command. Creates a new user, logs in, and creates the
  * data store in that order.
- *
- * @author Michael
  */
 public class RegisterCommand implements Command, Callback {
 
@@ -44,21 +42,22 @@ public class RegisterCommand implements Command, Callback {
     }
 
     @Override
-    public void execute(String[] arguments) {
-        if (arguments.length != argCount) {
+    public void execute(String arguments) {
+        String[] parsedArgs = arguments.split(",");
+        if (parsedArgs.length != argCount) {
             System.out.println("Error: bad number of arguments.");
         } else {
             try {
                 if (user != null && user.getLoginState()) {
                     System.out.println("Error: user already logged in.");
                 } else {
-                    user.setUsername(arguments[0]);
-                    user.setPassword(arguments[1]);
+                    user.setUsername(parsedArgs[0]);
+                    user.setPassword(parsedArgs[1]);
                     comm.sendMessage(new Message(Message.TYPE_CREATE_USER, user.getUsername() + ',' + user.getPassword()), this);
                 }
 
             } catch (UnsupportedEncodingException ex) {
-                logger.log(Level.SEVERE, "Unable to register new user with username {0}", arguments[0]);
+                logger.log(Level.SEVERE, "Unable to register new user with username {0}", parsedArgs[0]);
             }
 
         }

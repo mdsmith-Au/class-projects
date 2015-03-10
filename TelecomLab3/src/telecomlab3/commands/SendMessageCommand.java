@@ -11,8 +11,6 @@ import telecomlab3.User;
 
 /**
  * Handles the sending of messages to other users.
- *
- * @author Michael
  */
 public class SendMessageCommand implements Command, Callback {
 
@@ -43,17 +41,15 @@ public class SendMessageCommand implements Command, Callback {
     }
 
     @Override
-    public void execute(String[] arguments) {
-        if (arguments.length != argCount) {
-            System.out.println("Error: bad number of arguments.");
-        } else {
-            if (user != null && user.getLoginState()) {
-                sendMessageToUser(arguments[0], arguments[1]);
-            } else {
-                System.out.println("Error: user not logged in.");
+    public void execute(String arguments) {
+        String[] parsedArgs = arguments.split(",", 2);
 
-            }
+        if (user != null && user.getLoginState()) {
+            sendMessageToUser(parsedArgs[0], parsedArgs[1]);
+        } else {
+            System.out.println("Error: user not logged in.");
         }
+
     }
 
     @Override

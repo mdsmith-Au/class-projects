@@ -11,8 +11,6 @@ import telecomlab3.User;
 
 /**
  * Handles the login command.
- *
- * @author Michael
  */
 public class LoginCommand implements Command, Callback {
 
@@ -43,21 +41,20 @@ public class LoginCommand implements Command, Callback {
     }
 
     @Override
-    public void execute(String[] arguments) {
-        if (arguments.length != argCount) {
+    public void execute(String arguments) {
+        String[] parsedArgs = arguments.split(",");
+        if (parsedArgs.length != argCount) {
             System.out.println("Error: bad number of arguments.");
         } else {
             if (user != null && user.getLoginState()) {
                 System.out.println("User already logged in.");
             } else {
-                user.setUsername(arguments[0]);
-                user.setPassword(arguments[1]);
+                user.setUsername(parsedArgs[0]);
+                user.setPassword(parsedArgs[1]);
                 user.setLogin(false);
                 login();
             }
-
         }
-
     }
 
     @Override

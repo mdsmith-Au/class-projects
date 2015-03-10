@@ -11,8 +11,6 @@ import telecomlab3.User;
 
 /**
  * Represents the delete user command. User will be deleted from the server.
- *
- * @author Michael
  */
 public class DeleteCommand implements Command, Callback {
 
@@ -43,8 +41,7 @@ public class DeleteCommand implements Command, Callback {
     }
 
     @Override
-    public void execute(String[] arguments) {
-
+    public void execute(String arguments) {
         if (user == null) {
             System.out.println("Error: user not logged in.");
         } else if (user != null && !user.getLoginState()) {
@@ -58,7 +55,6 @@ public class DeleteCommand implements Command, Callback {
                 logger.log(Level.SEVERE, null, ex);
             }
         }
-
     }
 
     @Override

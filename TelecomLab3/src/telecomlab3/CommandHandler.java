@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 /**
  * Processes user commands and sends them to appropriate handlers.
- *
- * @author Kevin Dam
  */
 public class CommandHandler {
 
@@ -41,25 +39,9 @@ public class CommandHandler {
 
             CommandEntry cmdEntry = clientCommandMap.get(cmdName);
             if (cmdEntry != null) {
-                String[] cmdArgs = null;
-                int numArgs = 0;
-                if (!args.isEmpty()) {
-                    cmdArgs = args.split(",");
-                    numArgs = cmdArgs.length;
-                }
-
-                int argc = cmdEntry.getArgCount();
                 Command handler = cmdEntry.getCommand();
-
-                // Handle arguments
-                if (numArgs < argc) { // number of supplied args < required args
-                    System.out.println("Error: " + cmdName + " must take "
-                            + argc + " argument(s).");
-                } else {
-                    handler.execute(cmdArgs);
-                }
+                handler.execute(args);
             } else {
-                // TODO: replace with exception?
                 System.out.println("Unknown command: " + cmdName);
             }
         }

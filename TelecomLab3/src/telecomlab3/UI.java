@@ -6,8 +6,6 @@ import telecomlab3.commands.*;
 
 /**
  * Handles all User Input.
- *
- * @author Kevin Dam
  */
 public class UI {
     private final User user;

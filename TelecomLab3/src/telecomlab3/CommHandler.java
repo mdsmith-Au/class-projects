@@ -9,9 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Handles communication with the server
- *
- * @author Michael
+ * Handles communication with the server.
  */
 public class CommHandler {
     private static final Logger logger = Logger.getLogger(CommHandler.class.getName());
@@ -93,7 +91,7 @@ public class CommHandler {
      * @param msg The message to send.
      */
     private void createSendThread(Message msg) {
-        messageProcess proc = new messageProcess(msg);
+        MessageProcess proc = new MessageProcess(msg);
         execServ.submit(proc);
     }
 
@@ -110,11 +108,11 @@ public class CommHandler {
     /**
      * A class used when creating new threads to send messages.
      */
-    private class messageProcess implements Runnable {
+    private class MessageProcess implements Runnable {
 
         private final Message message;
 
-        public messageProcess(Message msg) {
+        public MessageProcess(Message msg) {
             message = msg;
         }
 

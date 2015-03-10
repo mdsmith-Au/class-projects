@@ -6,8 +6,6 @@ import java.util.concurrent.Executors;
 /**
  * Main class; calls the constructors of various methods to initialize
  * everything.
- *
- * @author Michael
  */
 public class TelecomLab3 {
 

@@ -8,8 +8,6 @@ import java.nio.ByteBuffer;
 
 /**
  * Defines the contents of a message.
- *
- * @author Michael
  */
 public class Message {
     // First 3 fields as defined by spec specifying message type, subtype

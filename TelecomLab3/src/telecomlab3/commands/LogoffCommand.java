@@ -11,8 +11,6 @@ import telecomlab3.User;
 
 /**
  * Handles the logoff command.
- *
- * @author Michael
  */
 public class LogoffCommand implements Command, Callback {
 
@@ -43,12 +41,10 @@ public class LogoffCommand implements Command, Callback {
     }
 
     @Override
-    public void execute(String[] arguments) {
-
+    public void execute(String arguments) {
         // Note: user might already be logged on from a previous (say crashed) session, so we don't
         // want to prevent them from logging off by checking the user object
         logoff();
-
     }
 
     @Override

@@ -11,8 +11,6 @@ import telecomlab3.Message;
 /**
  * Represents the echo command. Server will respond with contents of message
  * sent.
- *
- * @author Michael
  */
 public class EchoCommand implements Command, Callback {
 
@@ -40,12 +38,14 @@ public class EchoCommand implements Command, Callback {
 
     @Override
     // Message always of type echo
-    public void execute(String[] arguments) {
-        if (arguments.length != argCount) {
+    public void execute(String arguments) {
+        String[] parsedArgs = arguments.split(",");
+
+        if (parsedArgs.length != argCount) {
             System.out.println("Error: bad number of arguments.");
         } else {
             try {
-                comm.sendMessage(new Message(Message.TYPE_ECHO, arguments[0]), this);
+                comm.sendMessage(new Message(Message.TYPE_ECHO, parsedArgs[0]), this);
             } catch (UnsupportedEncodingException ex) {
                 logger.log(Level.SEVERE, null, ex);
             }

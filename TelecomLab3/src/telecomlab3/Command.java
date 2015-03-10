@@ -2,8 +2,6 @@ package telecomlab3;
 
 /**
  * Interface defining methods all UI commands should implement.
- *
- * @author Kevin Dam
  */
 public interface Command {
 
@@ -26,5 +24,5 @@ public interface Command {
      *
      * @param arguments
      */
-    public void execute(String[] arguments);
+    public void execute(String arguments);
 }

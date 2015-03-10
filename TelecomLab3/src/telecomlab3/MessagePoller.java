@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 
 /**
  * Polls the server for new messages.
- *
- * @author Michael
  */
 public class MessagePoller implements Callback {
 

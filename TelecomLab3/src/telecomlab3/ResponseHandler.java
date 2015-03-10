@@ -11,8 +11,6 @@ import telecomlab3.commands.LoginCommand;
 /**
  * Waits for and processes all responses from server. Executes callbacks for
  * expected messages.
- *
- * @author Michael
  */
 public class ResponseHandler {
 
@@ -33,7 +31,7 @@ public class ResponseHandler {
         this.in = in;
         this.callbackMap = new HashMap<>();
         this.callbackMapPerm = new HashMap<>();
-        responseProcess respP = new responseProcess();
+        ResponseProcess respP = new ResponseProcess();
         execService.submit(respP);
     }
 
@@ -71,7 +69,13 @@ public class ResponseHandler {
     }
 
     // Handles the server responses
-    private class responseProcess implements Runnable {
+    private class ResponseProcess implements Runnable {
+        private Message responseMsg;
+
+        public Message getLastResponseMsg() {
+            return responseMsg;
+        }
+
         @Override
         public void run() {
             try {
@@ -82,7 +86,7 @@ public class ResponseHandler {
                 while (true) {
                     // This will create a new message if it comes in
                     // Otherwise, it will block
-                    Message responseMsg = new Message(in);
+                    responseMsg = new Message(in);
 
                     // Determine the message type to figure out the appropriate callback
                     int messageType = responseMsg.getType();
