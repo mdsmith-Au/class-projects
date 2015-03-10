@@ -48,7 +48,11 @@ public class MessagePoller implements Callback {
 
         if (msg.getSubType() == Message.SUBTYPE_QUERY_MSG_MESSAGES) {
             System.out.println("Message received:");
-            System.out.println(msg.getDataAsString());
+            String received = msg.getDataAsString();
+            received = received.trim();
+            String[] recComponents = received.split(",");
+            
+            System.out.printf("[%s] | %s says: %s\n", recComponents[1], recComponents[0], recComponents[2]);
         } else if (msg.getSubType() == Message.SUBTYPE_QUERY_MSG_NOT_LOG_IN) {
             // Somehow we're not logged in, update our variable
             user.setLogin(false);
