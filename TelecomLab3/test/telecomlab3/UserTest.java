@@ -30,84 +30,41 @@ public class UserTest {
     }
 
     /**
-     * Test of getUsername method, of class User.
+     * Test of getUsername and setUsername methods, of class User.
      */
     @Test
-    public void testGetUsername() {
-        System.out.println("getUsername");
+    public void testGetAndSetUsername() {
+
         User instance = new User();
-        String expResult = "";
+        instance.setUsername("Bob");
+        String expResult = "Bob";
         String result = instance.getUsername();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
-     * Test of getPassword method, of class User.
+     * Test of setPassword and getPassword methods, of class User.
      */
     @Test
-    public void testGetPassword() {
-        System.out.println("getPassword");
+    public void testGetAndSetPassword() {
         User instance = new User();
-        String expResult = "";
+        String expResult = "thisIsAPassword";
+        instance.setPassword("thisIsAPassword");
         String result = instance.getPassword();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
-     * Test of setLogin method, of class User.
+     * Test of setLogin and getLogin methods, of class User.
      */
     @Test
-    public void testSetLogin() {
-        System.out.println("setLogin");
-        boolean state = false;
+    public void testGetAndSetLogin() {
+
+        boolean state = true;
         User instance = new User();
         instance.setLogin(state);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+        assertEquals(state, instance.getLoginState());
 
-    /**
-     * Test of getLoginState method, of class User.
-     */
-    @Test
-    public void testGetLoginState() {
-        System.out.println("getLoginState");
-        User instance = new User();
-        boolean expResult = false;
-        boolean result = instance.getLoginState();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
-
-    /**
-     * Test of setUsername method, of class User.
-     */
-    @Test
-    public void testSetUsername() {
-        System.out.println("setUsername");
-        String username = "";
-        User instance = new User();
-        instance.setUsername(username);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setPassword method, of class User.
-     */
-    @Test
-    public void testSetPassword() {
-        System.out.println("setPassword");
-        String password = "";
-        User instance = new User();
-        instance.setPassword(password);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
 }
