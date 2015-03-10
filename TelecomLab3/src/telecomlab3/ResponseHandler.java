@@ -15,6 +15,7 @@ import telecomlab3.commands.LoginCommand;
 public class ResponseHandler {
 
     private final InputStream in;
+    private final ExecutorService execServ;
     private final HashMap<Integer, Callback> callbackMap;
     private final HashMap<Integer, Callback> callbackMapPerm;
 
@@ -31,8 +32,12 @@ public class ResponseHandler {
         this.in = in;
         this.callbackMap = new HashMap<>();
         this.callbackMapPerm = new HashMap<>();
+        this.execServ = execService;
+    }
+    
+    public void startListening() {
         ResponseProcess respP = new ResponseProcess();
-        execService.submit(respP);
+        execServ.submit(respP);
     }
 
     /**
@@ -47,7 +52,7 @@ public class ResponseHandler {
     }
 
     /**
-     * Adds a Callback for a given type of message. The Callback is never remove
+     * Adds a Callback for a given type of message. The Callback is never removed
      * unless {@link  #removeFromCallbackMapPerm(int) removeFromCallbackMapPerm}
      * is called.
      *

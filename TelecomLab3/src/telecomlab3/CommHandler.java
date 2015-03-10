@@ -59,6 +59,7 @@ public class CommHandler {
         logger.log(Level.INFO, "Connected to the Telecom Server at {0}:{1}", new Object[]{hostname, portNumber});
         // Create the object that will process all responses
         respHandle = new ResponseHandler(execServ, in);
+        respHandle.startListening();
     }
 
     /**
