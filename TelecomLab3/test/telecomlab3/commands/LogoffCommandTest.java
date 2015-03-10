@@ -19,13 +19,13 @@ import telecomlab3.User;
  *
  * @author Michael
  */
-public class LoginCommandTest {
+public class LogoffCommandTest {
 
     private CommHandler comm;
     private User user;
-    private LoginCommand log;
-    
-    public LoginCommandTest() {
+    private LogoffCommand log;
+
+    public LogoffCommandTest() {
     }
 
     @BeforeClass
@@ -40,7 +40,7 @@ public class LoginCommandTest {
     public void setUp() {
         comm = new CommHandler();
         user = new User();
-        log = new LoginCommand(comm, user);
+        log = new LogoffCommand(comm, user);
     }
 
     @After
@@ -48,45 +48,31 @@ public class LoginCommandTest {
     }
 
     /**
-     * Test of getName method, of class LoginCommand.
+     * Test of getName method, of class LogoffCommand.
      */
     @Test
     public void testGetName() {
-
-
-        String expResult = "login";
+        String expResult = "logoff";
         String result = log.getName();
         assertEquals(expResult, result);
-
     }
 
     /**
-     * Test of execute and handleResponse method, of class LoginCommand.
+     * Test of execute and handleResponse methods, of class LogoffCommand.
      */
     @Test
     public void testExecuteAndHandleResponse() {
+        log.execute(null);
+        assertEquals(user.getLoginState(), false);
 
-
-        // Normally, we would mock this kind of command with a local server
-        // but since that's not possible, we assume it calls sendMessage()
-        // in CommHandler with the appropriate message, which we verify
-        // in our stub class
-        log.execute("Bob,BobsPassword");
-
-        // Assume message sent and good response received,
-        // run callback
-        log.handleResponse(new Message(Message.TYPE_LOGIN, Message.SUBTYPE_LOGIN_SUCCESS, new byte[] {}));
-        assertEquals(user.getUsername(), "Bob");
-        assertEquals(user.getPassword(), "BobsPassword");
-        assertEquals(user.getLoginState(), true);
     }
 
     /**
-     * Test of getArgCount method, of class LoginCommand.
+     * Test of getArgCount method, of class LogoffCommand.
      */
     @Test
     public void testGetArgCount() {
-        int expResult = 2;
+        int expResult = 0;
         int result = log.getArgCount();
         assertEquals(expResult, result);
 
@@ -96,9 +82,8 @@ public class LoginCommandTest {
 
         @Override
         public void sendMessage(Message msg, Callback call) {
-            assertEquals(msg.getType(), Message.TYPE_LOGIN);
+            assertEquals(msg.getType(), Message.TYPE_LOGOFF);
             assertEquals(msg.getSubType(), 0);
-            assertEquals(msg.getDataAsString(), "Bob,BobsPassword");
         }
     }
 }

@@ -2,6 +2,7 @@ package telecomlab3;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Main class; calls the constructors of various methods to initialize
@@ -26,6 +27,7 @@ public class TelecomLab3 {
         // Create UI and handle user input
         UI ui = new UI(execServ, comm, user);
         // Create poller to poll server for new messages
-        MessagePoller poller = new MessagePoller(comm, user);
+        ScheduledExecutorService execServSched = Executors.newSingleThreadScheduledExecutor();
+        MessagePoller poller = new MessagePoller(comm, user, execServSched);
     }
 }

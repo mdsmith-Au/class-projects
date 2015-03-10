@@ -24,16 +24,17 @@ public class MessagePoller implements Callback {
      * @param comm The commHandler to use when sending messages.
      * @param user The instance of {@link telecomlab3.User user} representing
      * the user. Used to determine login state.
+     * @param executorService Executor service.
      */
-    public MessagePoller(CommHandler comm, User user) {
+    public MessagePoller(CommHandler comm, User user, ScheduledExecutorService executorService) {
         this.comm = comm;
         this.user = user;
 
         // We put the poller on its own thread, to run every 2 seconds.
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         Poller poll = new Poller();
         executorService.scheduleAtFixedRate(poll, 0, 2, TimeUnit.SECONDS);
     }
+    
 
     /**
      * Used to process responses from server for our query commands. We can be
