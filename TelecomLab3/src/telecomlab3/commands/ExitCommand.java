@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import telecomlab3.CommHandler;
 import telecomlab3.Command;
 import telecomlab3.Message;
-import telecomlab3.User;
 
 /**
  * Terminates the application.

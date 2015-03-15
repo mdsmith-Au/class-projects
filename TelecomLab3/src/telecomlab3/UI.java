@@ -2,7 +2,13 @@ package telecomlab3;
 
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
-import telecomlab3.commands.*;
+import telecomlab3.commands.DeleteCommand;
+import telecomlab3.commands.EchoCommand;
+import telecomlab3.commands.ExitCommand;
+import telecomlab3.commands.LoginCommand;
+import telecomlab3.commands.LogoffCommand;
+import telecomlab3.commands.RegisterCommand;
+import telecomlab3.commands.SendMessageCommand;
 
 /**
  * Handles all User Input.
