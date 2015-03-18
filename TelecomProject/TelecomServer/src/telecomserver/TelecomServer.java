@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Initializes the server and waits for incoming connections.
@@ -33,6 +34,9 @@ public class TelecomServer {
 
     private static final String DATA_FILE_NAME = "data.txt";
     
+    private static final String QUEUE_SIZE = "4096";
+    private static final String OUTPUT_RATE = "1024";
+    
     private static final ExecutorService exec = Executors.newCachedThreadPool();
     /**
      * @param args the command line arguments
@@ -41,8 +45,10 @@ public class TelecomServer {
 
         // Create properties object for port number
         Properties prop = new Properties();
-        // Set default port
+        // Set default port, queue size, output rate
         prop.setProperty("port", SERVER_PORT);
+        prop.setProperty("queueSize", QUEUE_SIZE);
+        prop.setProperty("outputRate", OUTPUT_RATE);
         try {
             // Try reading from file, but not fatal - fall back to defaults
             // if we can't
@@ -80,13 +86,16 @@ public class TelecomServer {
             System.exit(EXIT_ERROR);
         }
 
+        //Create thread scheduler for all connections
+        ScheduledExecutorService execS = Executors.newScheduledThreadPool(1);
+        
         // Wait for incoming connections indefinitely
         while (true) {
             try {
                 // Accept connection from client, pass it to a connection handler
                 // in a new thread
                 Socket clientSocket = serverSocket.accept();
-                exec.submit(new ConnectionHandler(data, clientSocket));
+                exec.submit(new ConnectionHandler(data, clientSocket, prop, execS));
                 log.log(Level.INFO, "Connection from {0}:{1} accepted", new Object[]{clientSocket.getInetAddress(), String.valueOf(clientSocket.getPort())});
             } catch (IOException ex) {
                 log.log(Level.SEVERE, "Unable to accept connection.\n{0}", ex.getLocalizedMessage());
