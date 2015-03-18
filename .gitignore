@@ -12,3 +12,8 @@
 /TelecomServer/dist/
 /TelecomServer/build/
 /TelecomClient/build/
+/TelecomProject/TelecomClient/build/
+/TelecomProject/TelecomClient/nbproject/private/
+/TelecomProject/TelecomServer/build/
+/TelecomProject/TelecomServer/dist/
+/TelecomProject/TelecomServer/nbproject/private/
