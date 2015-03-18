@@ -1,0 +1,38 @@
+﻿Project 3: Leaky Bucket Filtering for Rate Limiting (a.k.a. Traffic
+Shaping)
+In this project you’ll be designing a traffic shaping algorithm and demonstrating it in a custom-built
+application. Traffic shaping is the act of throttling traffic over a network connection to meet prespecified
+rules. In this case we wish to limit overall traffic throughput and bandwidth with a leaky
+bucket algorithm (see: http://en.wikipedia.org/wiki/Leaky_bucket).
+Leaky Bucket
+When companies or enterprises throttle a user’s traffic, the most common way to do this is through
+the leaky bucket algorithm. The leaky bucket buffers user traffic in order to reduce the throughput,
+and if the leaky bucket buffer becomes full, it may drop user traffic packets. The leaky bucket can
+also be used to “smooth” bursty traffic by delaying portions of it so that the resulting traffic stream is
+spread out over more time.
+Leaky Bucket Implementation
+For this project you will implement a client and server using sockets (you can build on top of
+existing code, e.g., from previous assignments). Once the client establishes a connection to the
+server, data will only be sent from the server to the client.
+The server will implement two types of traffic sources: constant bit rate, and bursty. The constant bit
+rate source sends small packets containing 800 bytes of traffic are sent every 100ms, mimicking
+streaming audio. The bursty source enters a loop where it waits for 15 seconds (sending nothing) and
+then sends 120k bits of data immediately, in one burst.
+The leaky bucket should be implemented at the server by writing a wrapper around the TCP Socket
+class. The server and client should be multi-threaded. When the server application is launched, any
+parameters required for the leaky bucket should either be read from a configuration file, or the user
+should be prompted for these parameters. When the client application is started, it should accept
+either a configuration file or command line input indicating how many connections to open to the
+server, and what type of traffic to use on each connection (constant bit rate or bursty). Then the
+client will open multiple parallel connections to the server. On each connection, it will send a
+request which includes which type of traffic source to use, and whether or not to activate the leaky
+bucket. (The format of the request packet is to be designed by the project group.) The server will
+continue sending traffic until the connection is closed by the client.
+After you implement your client and server, you will conduct experiments using Wireshark to
+capture the traffic between client and server. Your experiments should illustrate the effects that the
+leaky bucket has on both types of traffic sources.
+For Demo 1:
+For demonstration 1, you should describe the way you will implement the leaky bucket filter, the
+two traffic sources, and you should also describe the protocol you will use to signal between the
+client and server. You do not need to have all of these implemented for the first demonstration, but
+we recommend starting your implementation as soon as possible.

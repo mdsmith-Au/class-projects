@@ -5,9 +5,6 @@
  */
 package telecomclient;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import telecomserver.TelecomServer;
 /**
  *
  * @author michael
@@ -20,14 +17,7 @@ public class TelecomClient {
     public static void main(String[] args) {
         
         // TODO code application logic here
-        System.out.println("Class : TelecomClient");
-        System.out.println("Telecom server var: " + TelecomServer.test);
-        try {
-            Thread.sleep(30000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(TelecomClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println("Done with TelecomClient");
+
     }
 
 }
