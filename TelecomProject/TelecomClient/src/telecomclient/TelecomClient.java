@@ -30,7 +30,7 @@ public class TelecomClient {
         BufferedReader in = new BufferedReader(new InputStreamReader(new BufferedInputStream(socket.getInputStream()), StandardCharsets.UTF_8));
         BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
         byte type = 1;
-        byte activate = 0;
+        byte activate = 1;
         out.write(type);
         out.write(activate);
         out.flush();
@@ -39,5 +39,6 @@ public class TelecomClient {
                 System.out.println(l);
             }
     }
+
 
 }

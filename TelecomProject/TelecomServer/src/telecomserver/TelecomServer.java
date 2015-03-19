@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package telecomserver;
 
 import java.io.FileInputStream;
@@ -20,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Initializes the server and waits for incoming connections.
@@ -30,13 +24,16 @@ public class TelecomServer {
 
     private static final Logger log = Logger.getLogger(TelecomServer.class.getName());
 
+    // Propertu file with fields like server port or bucket parameters
     private static final String PROPERTY_FILE = "server.properties";
-
+    // Text file (UTF-8) with data to send to client
     private static final String DATA_FILE_NAME = "data.txt";
     
+    // Default bucket parameters
     private static final String QUEUE_SIZE = "4096";
     private static final String OUTPUT_RATE = "1024";
     
+    // Service for creating threads for new client connections
     private static final ExecutorService exec = Executors.newCachedThreadPool();
     /**
      * @param args the command line arguments
@@ -85,9 +82,6 @@ public class TelecomServer {
             log.log(Level.SEVERE, null, ex);
             System.exit(EXIT_ERROR);
         }
-
-        //Create thread scheduler for all connections
-        ScheduledExecutorService execS = Executors.newScheduledThreadPool(1);
         
         // Wait for incoming connections indefinitely
         while (true) {
@@ -95,7 +89,7 @@ public class TelecomServer {
                 // Accept connection from client, pass it to a connection handler
                 // in a new thread
                 Socket clientSocket = serverSocket.accept();
-                exec.submit(new ConnectionHandler(data, clientSocket, prop, execS));
+                exec.submit(new ConnectionHandler(data, clientSocket, prop));
                 log.log(Level.INFO, "Connection from {0}:{1} accepted", new Object[]{clientSocket.getInetAddress(), String.valueOf(clientSocket.getPort())});
             } catch (IOException ex) {
                 log.log(Level.SEVERE, "Unable to accept connection.\n{0}", ex.getLocalizedMessage());
