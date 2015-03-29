@@ -25,6 +25,10 @@ public class TelecomClient {
         String type = clientConfig.getProperty("traffic");
         String activate = clientConfig.getProperty("useleakybucket");
         RequestPacket request = new RequestPacket(type, activate);
+
+        ConnectionManager manager = new ConnectionManager(clientConfig, execService);
+        manager.sendAllPackets(request);
+
         
         /*
         // TODO code application logic here
