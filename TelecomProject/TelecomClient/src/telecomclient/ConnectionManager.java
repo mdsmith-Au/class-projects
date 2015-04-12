@@ -8,10 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ConnectionManager {
+public class ConnectionManager implements Runnable {
     private String server;
     private int port;
     private int numberOfConnections;
+    private RequestPacket request;
 
     private Socket socket;
     private BufferedReader in;
@@ -20,18 +21,20 @@ public class ConnectionManager {
     private ExecutorService execService;
     private static final Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
-    public ConnectionManager(Properties config, ExecutorService execService) {
+    public ConnectionManager(Properties config, ExecutorService execService, RequestPacket request) {
         this(config.getProperty("server"),
             Integer.decode(config.getProperty("port")),
             Integer.decode(config.getProperty("connections")),
-            execService);
+            execService,
+            request);
     }
 
-    public ConnectionManager(String server, int port, int numConnections, ExecutorService execService) {
+    public ConnectionManager(String server, int port, int numConnections, ExecutorService execService, RequestPacket request) {
         this.server = server;
         this.port = port;
         this.numberOfConnections = numConnections;
         this.execService = execService;
+        this.request = request;
 
         try {
             this.socket = new Socket(server, port);
@@ -50,18 +53,12 @@ public class ConnectionManager {
         execService.submit(listener);
     }
 
-    public void sendPacket(RequestPacket packet) {
-        MessageProcess msgProc = new MessageProcess(packet);
+    @Override
+    public void run() {
+        System.out.println("OPEN: Thread id " + Thread.currentThread().getId());
+        MessageProcess msgProc = new MessageProcess(request);
         execService.submit(msgProc);
     }
-
-    public void sendAllPackets(RequestPacket packet) {
-        System.out.println("Opening " + numberOfConnections + " threads");
-        for (int i = 0; i < numberOfConnections; i++) {
-            sendPacket(packet);
-        }
-    }
-
 
     /**
      * A class used when creating new threads to send messages.

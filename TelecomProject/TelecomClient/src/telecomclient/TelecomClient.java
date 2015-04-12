@@ -1,8 +1,6 @@
 package telecomclient;
 
 import java.io.*;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,25 +24,14 @@ public class TelecomClient {
         String activate = clientConfig.getProperty("useleakybucket");
         RequestPacket request = new RequestPacket(type, activate);
 
-        ConnectionManager manager = new ConnectionManager(clientConfig, execService);
-        manager.sendAllPackets(request);
+        int numConnections = Integer.decode(clientConfig.getProperty("connections"));
 
-        
-        /*
-        // TODO code application logic here
-        Socket socket = new Socket("localhost", 9912);
-        BufferedReader in = new BufferedReader(new InputStreamReader(new BufferedInputStream(socket.getInputStream()), StandardCharsets.UTF_8));
-        BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
-        byte type = 1;
-        byte activate = 1;
-        out.write(type);
-        out.write(activate);
-        out.flush();
-        String l;
-            while ((l = in.readLine()) != null) {
-                System.out.println(l);
-            }
-            */
+        System.out.println("Opening " + numConnections + " connections");
+
+        for (int i = 0; i < numConnections; i++) {
+            ConnectionManager manager = new ConnectionManager(clientConfig, execService, request);
+            execService.submit(manager);
+        }
     }
 
     private static Properties createDefaultConfig() {
