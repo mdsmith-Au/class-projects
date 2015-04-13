@@ -86,25 +86,6 @@ public class ConnectionHandler implements Runnable {
             TrafficSource traf = new TrafficSource(leak, data, type, execS);
             traf.start();
         }
-        // Wait for exit request from client
-        // This will keep reading bytes from the client and ignore them until
-        // it sees a -1, at which point it closes the connection
-        while (true) {
-            try {
-                byte d[] = new byte[1];
-                in.read(d);
-                if (d[0] == -1) {
-                    connection.close();
-                    execS.shutdown();
-                    return;
-                }
-            } // If this fires, the connection is already dead; just kill the
-            // scheduled task and leave
-            catch (IOException ex) {
-                log.log(Level.INFO, "{0} for client at {1}", new Object[]{ex.getLocalizedMessage(), connection.toString()});
-                execS.shutdown();
-                return;
-            }
-        }
+        
     }
 }
