@@ -7,6 +7,10 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The main application start class for the client.
+ * @author Kevin Dam
+ */
 public class TelecomClient {
     // Client configuration file
     private static final String PROPERTY_FILE = "client-config.properties";
@@ -34,6 +38,10 @@ public class TelecomClient {
         }
     }
 
+    /**
+     * Configures the default configuration for the client if a properties file is not provided.
+     * @return the properties configuration file
+     */
     private static Properties createDefaultConfig() {
         Properties defaultConfig = new Properties();
         defaultConfig.setProperty("server", "localhost");
@@ -44,6 +52,10 @@ public class TelecomClient {
         return defaultConfig;
     }
 
+    /**
+     * Reads the configuration property file, or uses the default if not found.
+     * @return the properties configuration file
+     */
     private static Properties loadClientConfig() {
         Properties defaultConfig = createDefaultConfig();
         Properties clientConfig = new Properties(defaultConfig);

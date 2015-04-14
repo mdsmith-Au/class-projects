@@ -8,6 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Responsible for opening a socket to the server for an individual thread.
+ * @author Kevin Dam
+ */
 public class ConnectionManager implements Runnable {
     private String server;
     private int port;
@@ -21,6 +25,12 @@ public class ConnectionManager implements Runnable {
     private ExecutorService execService;
     private static final Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
+    /**
+     * Constructor for a custom properties file.
+     * @param config the configuration file
+     * @param execService the executor service
+     * @param request the message request to send to the server
+     */
     public ConnectionManager(Properties config, ExecutorService execService, RequestPacket request) {
         this(config.getProperty("server"),
             Integer.decode(config.getProperty("port")),
@@ -29,6 +39,14 @@ public class ConnectionManager implements Runnable {
             request);
     }
 
+    /**
+     * Full constructor for the Connection Manager.
+     * @param server the server hostname to connect to
+     * @param port the port to connect on
+     * @param numConnections the number of parallel connctions to open
+     * @param execService the executor service
+     * @param request the message request to send to the server
+     */
     public ConnectionManager(String server, int port, int numConnections, ExecutorService execService, RequestPacket request) {
         this.server = server;
         this.port = port;
@@ -82,6 +100,9 @@ public class ConnectionManager implements Runnable {
         }
     }
 
+    /**
+     * A helper class to listen to the socket and print out the response.
+     */
     private class ConnectionListener implements Runnable {
         @Override
         public void run() {
