@@ -17,6 +17,8 @@ import java.util.logging.Logger;
  */
 public class LeakyBucket extends OutputStream {
 
+    private long bytesDropped = 0;
+    
     // Queue to use as base implementation for sending data
     private final ArrayBlockingQueue<Byte> queue;
     // Object representing the recurring read from queue
@@ -57,6 +59,10 @@ public class LeakyBucket extends OutputStream {
         if (queue.remainingCapacity() != 0) {
             queue.add((byte) b);
         }
+        else {
+            bytesDropped++;
+            
+        }
     }
 
     /**
@@ -91,6 +97,7 @@ public class LeakyBucket extends OutputStream {
                 // Cancel this tread to prevent infinite attempts to write 
                 // to a bad stream (i.e. client died)
                 logT.log(Level.INFO, ex.getLocalizedMessage());
+                System.out.println("Dropped " + bytesDropped++ + " bytes");
                 schedF.cancel(false);
             }
         }
